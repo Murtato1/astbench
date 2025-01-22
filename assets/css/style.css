@@ -1,10 +1,12 @@
-/* Subtle Dark Mode Gradient */
+/* Universal Background Gradient */
 html {
     height: 100%;
-    background: linear-gradient(135deg, #121212, #1a1a1a); /* Subtle dark greys */
+    background: #E6DADA; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #274046, #E6DADA); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #274046, #E6DADA); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     background-attachment: fixed;
     background-size: cover;
-    color: #d3d3d3; /* Light grey text */
+    color: #d3d3d3; /* Light grey text for readability */
 }
 
 body {
@@ -24,7 +26,7 @@ header, main, footer {
 
 /* Header */
 header {
-    background: rgba(20, 20, 20, 0.9); /* Dark, slightly transparent */
+    background: rgba(39, 64, 70, 0.8); /* Semi-transparent overlay matching the gradient */
     padding: 2rem 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
@@ -42,7 +44,7 @@ main {
     padding: 2rem;
     max-width: 900px;
     margin: 2rem auto;
-    background: rgba(0, 0, 0, 0.85); /* Semi-transparent overlay for content */
+    background: rgba(230, 218, 218, 0.1); /* Light transparent overlay for contrast */
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
@@ -73,11 +75,12 @@ canvas {
 
 /* Footer */
 footer {
-    background: rgba(20, 20, 20, 0.9);
+    background: rgba(39, 64, 70, 0.8); /* Semi-transparent overlay matching the gradient */
     padding: 1rem 0;
     color: #d3d3d3;
     font-size: 0.9rem;
     margin-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Links */
