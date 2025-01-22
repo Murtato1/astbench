@@ -41,7 +41,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
                     legend: {
                         position: 'top',
                         labels: {
-                            color: '#000000', // BLACK legend text
+                            color: '#ffffff', // White legend text
                             font: {
                                 family: 'Orbitron', // Stylish font
                                 size: 14
@@ -52,26 +52,26 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
                 scales: {
                     x: {
                         ticks: {
-                            color: '#ffffff', // White x-axis labels
+                            color: '#d3d3d3', // Light grey x-axis labels
                             font: {
                                 family: 'Open Sans',
                                 size: 12
                             }
                         },
                         grid: {
-                            color: 'rgba(255, 255, 255, 0.2)' // Light gridlines
+                            color: 'rgba(255, 255, 255, 0.1)' // Subtle gridlines
                         }
                     },
                     y: {
                         ticks: {
-                            color: '#ffffff', // White y-axis labels
+                            color: '#d3d3d3', // Light grey y-axis labels
                             font: {
                                 family: 'Open Sans',
                                 size: 12
                             }
                         },
                         grid: {
-                            color: 'rgba(255, 255, 255, 0.2)' // Light gridlines
+                            color: 'rgba(255, 255, 255, 0.1)' // Subtle gridlines
                         },
                         beginAtZero: true
                     }
@@ -80,4 +80,3 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
         });
     });
 </script>
-
