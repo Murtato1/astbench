@@ -18,21 +18,21 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
             data: {
                 labels: ['Nebula A', 'Nebula B', 'Galaxy X', 'Galaxy Y'],
                 datasets: [{
-                    label: 'Stellar Data',
-                    data: [50, 100, 150, 200],
+                    label: 'Stellar Observations',
+                    data: [30, 50, 70, 90],
                     backgroundColor: [
-                        'rgba(128, 0, 128, 0.6)',  // Purple
-                        'rgba(0, 191, 255, 0.6)', // Blue
-                        'rgba(255, 69, 0, 0.6)',  // Red
-                        'rgba(34, 139, 34, 0.6)'  // Green
+                        'rgba(128, 0, 128, 0.7)', // Purple
+                        'rgba(0, 191, 255, 0.7)', // Blue
+                        'rgba(255, 99, 71, 0.7)',  // Red
+                        'rgba(50, 205, 50, 0.7)'  // Green
                     ],
                     borderColor: [
                         'rgba(128, 0, 128, 1)',
                         'rgba(0, 191, 255, 1)',
-                        'rgba(255, 69, 0, 1)',
-                        'rgba(34, 139, 34, 1)'
+                        'rgba(255, 99, 71, 1)',
+                        'rgba(50, 205, 50, 1)'
                     ],
-                    borderWidth: 2
+                    borderWidth: 1
                 }]
             },
             options: {
@@ -41,25 +41,37 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
                     legend: {
                         position: 'top',
                         labels: {
-                            color: '#ffffff' // White legend text
+                            color: '#000000', // BLACK legend text
+                            font: {
+                                family: 'Orbitron', // Stylish font
+                                size: 14
+                            }
                         }
                     }
                 },
                 scales: {
                     x: {
                         ticks: {
-                            color: '#ffffff' // White x-axis labels
+                            color: '#ffffff', // White x-axis labels
+                            font: {
+                                family: 'Open Sans',
+                                size: 12
+                            }
                         },
                         grid: {
-                            color: 'rgba(255, 255, 255, 0.1)' // Light gridlines
+                            color: 'rgba(255, 255, 255, 0.2)' // Light gridlines
                         }
                     },
                     y: {
                         ticks: {
-                            color: '#ffffff' // White y-axis labels
+                            color: '#ffffff', // White y-axis labels
+                            font: {
+                                family: 'Open Sans',
+                                size: 12
+                            }
                         },
                         grid: {
-                            color: 'rgba(255, 255, 255, 0.1)' // Light gridlines
+                            color: 'rgba(255, 255, 255, 0.2)' // Light gridlines
                         },
                         beginAtZero: true
                     }
