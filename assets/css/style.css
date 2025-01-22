@@ -1,16 +1,10 @@
-/* Center all text */
-header, main, footer {
-    text-align: center;
-}
-
-/* Background - Starry Night */
+/* Subtle Dark Mode Gradient */
 html {
     height: 100%;
-    background: #000428; /* Fallback solid color */
-    background: radial-gradient(circle at top, #001d3d, #000428); /* Starry night gradient */
+    background: linear-gradient(135deg, #121212, #1a1a1a); /* Subtle dark greys */
     background-attachment: fixed;
     background-size: cover;
-    color: #ffffff;
+    color: #d3d3d3; /* Light grey text */
 }
 
 body {
@@ -18,34 +12,37 @@ body {
     margin: 0;
     padding: 0;
     height: 100%;
-    color: #ffffff;
     line-height: 1.6;
+    color: #d3d3d3;
     overflow-x: hidden;
+}
+
+/* Center all text */
+header, main, footer {
+    text-align: center;
 }
 
 /* Header */
 header {
-    text-align: center;
-    padding: 2rem 1rem;
-    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent overlay */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-    color: #ffffff;
+    background: rgba(20, 20, 20, 0.9); /* Dark, slightly transparent */
+    padding: 2rem 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 header h1 {
     font-family: 'Orbitron', sans-serif;
-    font-size: 2.5rem;
+    font-size: 2.8rem;
+    color: #ffffff;
     margin: 0;
-    letter-spacing: 2px;
     text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
 }
 
-/* Adjust main content padding for better layout */
+/* Main Content */
 main {
     padding: 2rem;
     max-width: 900px;
     margin: 2rem auto;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.85); /* Semi-transparent overlay for content */
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
@@ -61,7 +58,7 @@ h2 {
 p {
     font-size: 1.1rem;
     margin-bottom: 1.5rem;
-    color: #d4e6f1;
+    color: #d3d3d3;
 }
 
 /* Chart */
@@ -76,13 +73,11 @@ canvas {
 
 /* Footer */
 footer {
-    text-align: center;
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.7); /* Semi-transparent overlay for footer */
-    color: #d4e6f1;
+    background: rgba(20, 20, 20, 0.9);
+    padding: 1rem 0;
+    color: #d3d3d3;
     font-size: 0.9rem;
     margin-top: 2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Links */
