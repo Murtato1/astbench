@@ -3,10 +3,6 @@ layout: default
 title: Home
 ---
 
-# Welcome to murtato1's Visualization Page
-
-This site features data visualizations built with Jekyll and Chart.js.
-
 ## Bar Chart Example
 
 <canvas id="myChart" width="400" height="200"></canvas>
