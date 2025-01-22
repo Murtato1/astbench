@@ -1,12 +1,12 @@
 /* Universal Background Gradient */
 html {
     height: 100%;
-    background: #E6DADA; /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #274046, #E6DADA); /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #274046, #E6DADA); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: #7474BF; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #348AC7, #7474BF); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #348AC7, #7474BF); /* Modern browsers */
     background-attachment: fixed;
     background-size: cover;
-    color: #d3d3d3; /* Light grey text for readability */
+    color: #e0e0e0; /* Light grey default text */
 }
 
 body {
@@ -15,43 +15,45 @@ body {
     padding: 0;
     height: 100%;
     line-height: 1.6;
-    color: #d3d3d3;
+    color: #e0e0e0; /* Ensure default text color matches theme */
     overflow-x: hidden;
 }
 
-/* Center all text */
+/* Center content alignment */
 header, main, footer {
     text-align: center;
 }
 
 /* Header */
 header {
-    background: rgba(39, 64, 70, 0.8); /* Semi-transparent overlay matching the gradient */
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent for subtle contrast */
     padding: 2rem 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 header h1 {
     font-family: 'Orbitron', sans-serif;
-    font-size: 2.8rem;
+    font-size: 2.5rem;
     color: #ffffff;
     margin: 0;
     text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
 }
 
-/* Main Content */
+/* Main Content Area */
 main {
     padding: 2rem;
     max-width: 900px;
     margin: 2rem auto;
-    background: rgba(230, 218, 218, 0.1); /* Light transparent overlay for contrast */
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    background: rgba(255, 255, 255, 0.9); /* Light semi-transparent for readability */
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+    color: #333333; /* Dark text for better contrast */
 }
 
+/* Subheadings */
 h2 {
-    color: #00e6e6;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    color: #348AC7; /* Accent color from gradient */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     font-family: 'Orbitron', sans-serif;
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
@@ -60,24 +62,24 @@ h2 {
 p {
     font-size: 1.1rem;
     margin-bottom: 1.5rem;
-    color: #d3d3d3;
+    color: #333333; /* Dark text for readability */
 }
 
-/* Chart */
+/* Chart Container */
 canvas {
     display: block;
     margin: 2rem auto;
     max-width: 100%;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    background: #ffffff; /* Keep charts on white for clarity */
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
 }
 
 /* Footer */
 footer {
-    background: rgba(39, 64, 70, 0.8); /* Semi-transparent overlay matching the gradient */
+    background: rgba(0, 0, 0, 0.5); /* Match header for visual consistency */
     padding: 1rem 0;
-    color: #d3d3d3;
+    color: #e0e0e0;
     font-size: 0.9rem;
     margin-top: 2rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -85,12 +87,16 @@ footer {
 
 /* Links */
 a {
-    color: #00e676;
+    color: #348AC7; /* Accent link color */
     text-decoration: none;
     transition: color 0.3s;
 }
 
 a:hover {
-    color: #ffffff;
-    text-shadow: 0 0 5px #00e676;
+    color: #7474BF; /* Hover matches gradient */
+}
+
+/* Flat Borders for Content Boxes */
+main, header, footer {
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle flat borders */
 }
