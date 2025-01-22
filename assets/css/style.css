@@ -1,22 +1,28 @@
 /* Background - Starry Night */
+html {
+    height: 100%;
+    background: #000428; /* Fallback solid color */
+    background: radial-gradient(circle at top, #001d3d, #000428); /* Starry night gradient */
+    background-attachment: fixed;
+    background-size: cover;
+    color: #ffffff;
+}
+
 body {
     font-family: 'Open Sans', sans-serif;
     margin: 0;
     padding: 0;
-    background: #000428; /* Fallback color */
-    background: radial-gradient(circle at top, #001d3d, #000428); /* Gradient */
-    background-attachment: fixed;
+    height: 100%;
     color: #ffffff;
     line-height: 1.6;
     overflow-x: hidden;
 }
 
-
 /* Header */
 header {
     text-align: center;
     padding: 2rem 1rem;
-    background: linear-gradient(to bottom, #003366, #001d3d);
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent overlay */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     color: #ffffff;
 }
@@ -34,7 +40,7 @@ main {
     max-width: 900px;
     margin: 2rem auto;
     padding: 2rem;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85); /* Semi-transparent overlay for content */
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
@@ -67,7 +73,7 @@ canvas {
 footer {
     text-align: center;
     padding: 1rem;
-    background: linear-gradient(to top, #003366, #001d3d);
+    background: rgba(0, 0, 0, 0.7); /* Semi-transparent overlay for footer */
     color: #d4e6f1;
     font-size: 0.9rem;
     margin-top: 2rem;
