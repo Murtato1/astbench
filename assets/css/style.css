@@ -1,3 +1,8 @@
+/* Center all text */
+header, main, footer {
+    text-align: center;
+}
+
 /* Background - Starry Night */
 html {
     height: 100%;
@@ -35,12 +40,12 @@ header h1 {
     text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
 }
 
-/* Main Content */
+/* Adjust main content padding for better layout */
 main {
+    padding: 2rem;
     max-width: 900px;
     margin: 2rem auto;
-    padding: 2rem;
-    background: rgba(0, 0, 0, 0.85); /* Semi-transparent overlay for content */
+    background: rgba(0, 0, 0, 0.85);
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
