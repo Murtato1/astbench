@@ -21,10 +21,10 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
                     label: 'Stellar Data',
                     data: [50, 100, 150, 200],
                     backgroundColor: [
-                        'rgba(128, 0, 128, 0.6)',  // Purple for Nebula A
-                        'rgba(0, 191, 255, 0.6)', // Blue for Nebula B
-                        'rgba(255, 69, 0, 0.6)',  // Red for Galaxy X
-                        'rgba(34, 139, 34, 0.6)'  // Green for Galaxy Y
+                        'rgba(128, 0, 128, 0.6)',  // Purple
+                        'rgba(0, 191, 255, 0.6)', // Blue
+                        'rgba(255, 69, 0, 0.6)',  // Red
+                        'rgba(34, 139, 34, 0.6)'  // Green
                     ],
                     borderColor: [
                         'rgba(128, 0, 128, 1)',
@@ -41,19 +41,25 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
                     legend: {
                         position: 'top',
                         labels: {
-                            color: 'white' // White legend text
+                            color: '#ffffff' // White legend text
                         }
                     }
                 },
                 scales: {
                     x: {
                         ticks: {
-                            color: 'white' // White axis labels
+                            color: '#ffffff' // White x-axis labels
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Light gridlines
                         }
                     },
                     y: {
                         ticks: {
-                            color: 'white' // White axis labels
+                            color: '#ffffff' // White y-axis labels
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Light gridlines
                         },
                         beginAtZero: true
                     }
@@ -62,3 +68,4 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
         });
     });
 </script>
+
