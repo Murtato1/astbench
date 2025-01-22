@@ -1,26 +1,74 @@
+/* General Styling */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Open Sans', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f9f9f9;
-}
-
-header {
-    background-color: #333;
+    background: linear-gradient(to bottom, #000428, #004e92);
     color: white;
-    padding: 1rem;
+    line-height: 1.6;
+}
+
+/* Header */
+header {
     text-align: center;
+    padding: 2rem 1rem;
+    background-color: rgba(0, 0, 0, 0.85);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
 }
 
+header h1 {
+    font-size: 2.5rem;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Main Content */
 main {
-    margin: 2rem auto;
     max-width: 800px;
+    margin: 2rem auto;
     padding: 1rem;
-    background: white;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
+/* Heading */
+h2 {
+    color: #00bcd4;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    margin-bottom: 1rem;
+}
+
+/* Paragraphs */
+p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    color: #cce7ff;
+}
+
+/* Chart Styling */
 canvas {
-    margin: 2rem 0;
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 1rem;
+    margin-top: 2rem;
+    background-color: rgba(0, 0, 0, 0.85);
+    color: #b0bec5;
+    font-size: 0.9rem;
+}
+
+/* Links */
+a {
+    color: #00e676;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
