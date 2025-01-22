@@ -1,74 +1,84 @@
-/* General Styling */
+/* Background - Starry Night */
 body {
     font-family: 'Open Sans', sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(to bottom, #000428, #004e92);
-    color: white;
+    background: radial-gradient(circle at top, #001d3d, #001228) fixed;
+    color: #ffffff;
     line-height: 1.6;
+    overflow-x: hidden;
 }
 
 /* Header */
 header {
     text-align: center;
     padding: 2rem 1rem;
-    background-color: rgba(0, 0, 0, 0.85);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(to bottom, #003366, #001d3d);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    color: #ffffff;
 }
 
 header h1 {
+    font-family: 'Orbitron', sans-serif;
     font-size: 2.5rem;
-    color: #ffffff;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    margin: 0;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
 }
 
 /* Main Content */
 main {
-    max-width: 800px;
+    max-width: 900px;
     margin: 2rem auto;
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
-/* Heading */
 h2 {
-    color: #00bcd4;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-    margin-bottom: 1rem;
-}
-
-/* Paragraphs */
-p {
-    font-size: 1rem;
+    color: #00e6e6;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.8rem;
     margin-bottom: 1.5rem;
-    color: #cce7ff;
 }
 
-/* Chart Styling */
+p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    color: #d4e6f1;
+}
+
+/* Chart */
 canvas {
     display: block;
     margin: 2rem auto;
     max-width: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
 }
 
 /* Footer */
 footer {
     text-align: center;
     padding: 1rem;
-    margin-top: 2rem;
-    background-color: rgba(0, 0, 0, 0.85);
-    color: #b0bec5;
+    background: linear-gradient(to top, #003366, #001d3d);
+    color: #d4e6f1;
     font-size: 0.9rem;
+    margin-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Links */
 a {
     color: #00e676;
     text-decoration: none;
+    transition: color 0.3s;
 }
 
 a:hover {
-    text-decoration: underline;
+    color: #ffffff;
+    text-shadow: 0 0 5px #00e676;
 }
