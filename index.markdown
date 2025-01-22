@@ -16,28 +16,45 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
         const myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['January', 'February', 'March', 'April'],
+                labels: ['Nebula A', 'Nebula B', 'Galaxy X', 'Galaxy Y'],
                 datasets: [{
-                    label: 'Sample Data',
-                    data: [10, 20, 15, 30],
+                    label: 'Stellar Data',
+                    data: [50, 100, 150, 200],
                     backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)'
+                        'rgba(128, 0, 128, 0.6)',  // Purple for Nebula A
+                        'rgba(0, 191, 255, 0.6)', // Blue for Nebula B
+                        'rgba(255, 69, 0, 0.6)',  // Red for Galaxy X
+                        'rgba(34, 139, 34, 0.6)'  // Green for Galaxy Y
                     ],
                     borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)'
+                        'rgba(128, 0, 128, 1)',
+                        'rgba(0, 191, 255, 1)',
+                        'rgba(255, 69, 0, 1)',
+                        'rgba(34, 139, 34, 1)'
                     ],
-                    borderWidth: 1
+                    borderWidth: 2
                 }]
             },
             options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: 'white' // White legend text
+                        }
+                    }
+                },
                 scales: {
+                    x: {
+                        ticks: {
+                            color: 'white' // White axis labels
+                        }
+                    },
                     y: {
+                        ticks: {
+                            color: 'white' // White axis labels
+                        },
                         beginAtZero: true
                     }
                 }
