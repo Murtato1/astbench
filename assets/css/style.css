@@ -9,6 +9,13 @@ html {
     color: #e0e0e0; /* Light grey default text */
 }
 
+#benchmarkChart {
+  max-width: 800px; /* Fixed width */
+  max-height: 400px; /* Fixed height */
+  margin: 0 auto; /* Center the chart */
+}
+
+
 body {
     font-family: 'Open Sans', sans-serif;
     margin: 0;
