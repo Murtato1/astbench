@@ -9,15 +9,20 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 ## Bar Chart Example
 
+# Benchmark Results
+
+Below is the visualization of the benchmark evaluation metrics:
+
 <canvas id="benchmarkChart" width="400" height="200"></canvas>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  const jsonUrl = 'https://raw.githubusercontent.com/Murtato1/astbench/main/assets/json/benchmark_1.json';
+  // Relative path to your JSON file in the repo
+  const jsonPath = "{{ site.baseurl }}/assets/json/benchmark_1.json";
 
   async function fetchAndProcessData() {
     try {
-      const response = await fetch(jsonUrl);
+      const response = await fetch(jsonPath); // Use relative path
       const data = await response.json();
 
       const metrics = {
@@ -28,6 +33,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
         codebertscore_rescaled: []
       };
 
+      // Process JSON data
       data.forEach(item => {
         item.result.forEach(result => {
           metrics.direct_match.push(result.direct_match ? 1 : 0);
@@ -38,20 +44,28 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
         });
       });
 
+      // Calculate averages
       const averages = {};
       for (const [key, values] of Object.entries(metrics)) {
         averages[key] = values.reduce((sum, val) => sum + val, 0) / values.length;
       }
 
-      renderChart(averages);
+      renderChart(averages); // Pass processed data to the chart
     } catch (error) {
-      console.error('Error fetching or processing data:', error);
+      console.error('Error fetching or processing JSON data:', error);
     }
   }
 
   function renderChart(averages) {
     const ctx = document.getElementById('benchmarkChart').getContext('2d');
-    new Chart(ctx, {
+
+    // Destroy existing chart if present
+    if (window.currentChart) {
+      window.currentChart.destroy();
+    }
+
+    // Create new chart
+    window.currentChart = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: Object.keys(averages),
@@ -60,5 +74,41 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
           data: Object.values(averages),
           backgroundColor: [
             'rgba(75, 192, 192, 0.2)',
-            'rgba(54, 162, 235
-::contentReference[oaicite:0]{index=0}
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+          ],
+          borderColor: [
+            'rgba(75, 192, 192, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        plugins: {
+          legend: {
+            display: true
+          },
+          title: {
+            display: true,
+            text: 'Benchmark Evaluation Metrics'
+          }
+        }
+      }
+    });
+  }
+
+  // Fetch and render chart on page load
+  fetchAndProcessData();
+</script>
