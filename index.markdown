@@ -7,13 +7,7 @@ title: Home
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-## Bar Chart Example
-
-# Benchmark Results
-
-Below is the visualization of the benchmark evaluation metrics:
-
-# Benchmark Results
+## Benchmark Results
 
 <h3 id="current-file"></h3>
 <p>Below is the visualization of the benchmark evaluation metrics:</p>
@@ -93,31 +87,50 @@ Below is the visualization of the benchmark evaluation metrics:
         labels: Object.keys(averages),
         datasets: [
           {
-            label: "Evaluation Metrics Averages",
-            data: Object.values(averages),
-            backgroundColor: [
-              "rgba(75, 192, 192, 0.2)",
-              "rgba(54, 162, 235, 0.2)",
-              "rgba(255, 206, 86, 0.2)",
-              "rgba(153, 102, 255, 0.2)",
-              "rgba(255, 159, 64, 0.2)"
-            ],
-            borderColor: [
-              "rgba(75, 192, 192, 1)",
-              "rgba(54, 162, 235, 1)",
-              "rgba(255, 206, 86, 1)",
-              "rgba(153, 102, 255, 1)",
-              "rgba(255, 159, 64, 1)"
-            ],
-            borderWidth: 1
+            label: "Metrics (0-1 Range)",
+            data: Object.values(averages).map((value, index) =>
+              index === 1 ? null : value // Ignore fuzzy_match for this dataset
+            ),
+            backgroundColor: "rgba(75, 192, 192, 0.2)",
+            borderColor: "rgba(75, 192, 192, 1)",
+            borderWidth: 1,
+            yAxisID: "y"
+          },
+          {
+            label: "Fuzzy Match (0-100 Range)",
+            data: Object.values(averages).map((value, index) =>
+              index === 1 ? value : null // Include only fuzzy_match for this dataset
+            ),
+            backgroundColor: "rgba(255, 159, 64, 0.2)",
+            borderColor: "rgba(255, 159, 64, 1)",
+            borderWidth: 1,
+            yAxisID: "y1"
           }
         ]
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true, // Ensure consistent aspect ratio
+        maintainAspectRatio: true, // Enforce fixed aspect ratio
         scales: {
           y: {
+            type: "linear",
+            position: "left",
+            title: {
+              display: true,
+              text: "Metrics (0-1)"
+            },
+            beginAtZero: true
+          },
+          y1: {
+            type: "linear",
+            position: "right",
+            title: {
+              display: true,
+              text: "Fuzzy Match (0-100)"
+            },
+            grid: {
+              drawOnChartArea: false // Prevents overlap of grid lines
+            },
             beginAtZero: true
           }
         },
@@ -127,7 +140,7 @@ Below is the visualization of the benchmark evaluation metrics:
           },
           title: {
             display: true,
-            text: "Benchmark Evaluation Metrics"
+            text: "Benchmark Evaluation Metrics with Dual Axes"
           }
         }
       }
