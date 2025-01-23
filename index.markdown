@@ -10,16 +10,54 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 ## Benchmark Results
 
 <h3 id="current-file"></h3>
+
+<h2>Select a Benchmark Result</h2>
+<select id="file-selector">
+  <option>Select a result</option>
+</select>
+<h3 id="current-file"></h3>
 <p>Below is the visualization of the benchmark evaluation metrics:</p>
+
+<canvas id="benchmarkChart" width="800" height="400"></canvas>
+
 
 <canvas id="benchmarkChart" width="800" height="400"></canvas> <!-- Enlarged chart -->
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  const jsonPath = "{{ site.baseurl }}/assets/json/gpt-4o.json";
+  const basePath = "{{ site.baseurl }}/assets/json/"; // Path to your JSON directory
+  const dropdown = document.getElementById("file-selector");
 
-  async function fetchAndProcessData() {
+  // Populate dropdown menu with JSON file options
+  async function populateDropdown() {
     try {
-      // Update the displayed file name without ".json"
+      // Static list of JSON files (replace with actual filenames or dynamic fetching logic if needed)
+      const files = ["benchmark_1.json", "benchmark_2.json"]; // Add more filenames as needed
+
+      files.forEach((file) => {
+        const option = document.createElement("option");
+        option.value = file;
+        option.textContent = file.replace(".json", ""); // Remove ".json" for display
+        dropdown.appendChild(option);
+      });
+    } catch (error) {
+      console.error("Error populating dropdown:", error);
+    }
+  }
+
+  // Event listener for dropdown selection
+  dropdown.addEventListener("change", function () {
+    const selectedFile = dropdown.value;
+    if (selectedFile !== "Select a result") {
+      const jsonPath = basePath + selectedFile;
+      fetchAndProcessData(jsonPath);
+    }
+  });
+
+  // Fetch and process data from the selected JSON file
+  async function fetchAndProcessData(jsonPath) {
+    try {
+      // Update the displayed file name
       document.getElementById("current-file").textContent = `Currently Displaying: ${jsonPath.split('/').pop().replace('.json', '')}`;
 
       const response = await fetch(jsonPath);
@@ -110,7 +148,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true, // Ensure consistent aspect ratio
+        maintainAspectRatio: true,
         scales: {
           y: {
             type: "linear",
@@ -147,6 +185,6 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
     });
   }
 
-  fetchAndProcessData(); // Fetch and render on page load
+  // Initialize the dropdown menu
+  populateDropdown();
 </script>
-
