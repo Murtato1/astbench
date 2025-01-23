@@ -3,7 +3,7 @@ layout: default
 title: Home
 ---
 
-# Welcome to AstroCopilot2 Benchmark
+# Welcome to AstroCopilot Benchmark
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
@@ -20,9 +20,7 @@ Below is the visualization of the benchmark evaluation metrics:
 
 <canvas id="benchmarkChart" width="800" height="400"></canvas> <!-- Enlarged chart -->
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  // Relative path to your JSON file
   const jsonPath = "{{ site.baseurl }}/assets/json/benchmark_1.json";
 
   async function fetchAndProcessData() {
@@ -41,28 +39,31 @@ Below is the visualization of the benchmark evaluation metrics:
         codebertscore_rescaled: []
       };
 
-      // Process JSON data
+      // Traverse every item in the JSON
       data.forEach((item) => {
-        item.result.forEach((result) => {
-          if (result.direct_match !== null) {
-            metrics.direct_match.push(result.direct_match ? 1 : 0);
-          }
-          if (result.fuzzy_match !== null) {
-            metrics.fuzzy_match.push(result.fuzzy_match);
-          }
-          if (result.codebleu && result.codebleu.codebleu !== null) {
-            metrics.codebleu.push(result.codebleu.codebleu);
-          }
-          if (result.codebertscore && result.codebertscore.F1 !== null) {
-            metrics.codebertscore.push(result.codebertscore.F1);
-          }
-          if (
-            result.codebertscore_rescaled &&
-            result.codebertscore_rescaled.F1 !== null
-          ) {
-            metrics.codebertscore_rescaled.push(result.codebertscore_rescaled.F1);
-          }
-        });
+        if (item.result) {
+          item.result.forEach((result) => {
+            // Check for each metric explicitly and push valid values
+            if ("direct_match" in result && result.direct_match !== null) {
+              metrics.direct_match.push(result.direct_match ? 1 : 0);
+            }
+            if ("fuzzy_match" in result && result.fuzzy_match !== null) {
+              metrics.fuzzy_match.push(result.fuzzy_match);
+            }
+            if ("codebleu" in result && result.codebleu?.codebleu !== null) {
+              metrics.codebleu.push(result.codebleu.codebleu);
+            }
+            if ("codebertscore" in result && result.codebertscore?.F1 !== null) {
+              metrics.codebertscore.push(result.codebertscore.F1);
+            }
+            if (
+              "codebertscore_rescaled" in result &&
+              result.codebertscore_rescaled?.F1 !== null
+            ) {
+              metrics.codebertscore_rescaled.push(result.codebertscore_rescaled.F1);
+            }
+          });
+        }
       });
 
       // Calculate averages
@@ -114,7 +115,7 @@ Below is the visualization of the benchmark evaluation metrics:
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false, // Ensures larger chart displays properly
+        maintainAspectRatio: true, // Ensure consistent aspect ratio
         scales: {
           y: {
             beginAtZero: true
