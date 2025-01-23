@@ -3,7 +3,7 @@ layout: default
 title: Home
 ---
 
-# Welcome to AstroCopilot Benchmark m
+# Welcome to AstroCopilot Benchmark
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
@@ -11,9 +11,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 <select id="file-selector">
   <option>Select a result</option>
 </select>
-<h3 id="current-file"></h3>
 
-<canvas id="benchmarkChart" width="800" height="400"></canvas> <!-- Enlarged chart -->
+<canvas id="benchmarkChart" width="800" height="400"></canvas>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -23,8 +22,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
   // Populate dropdown menu with JSON file options
   async function populateDropdown() {
     try {
-      // Static list of JSON files (replace with actual filenames or dynamic fetching logic if needed)
-      const files = ["gpt-4o.json"]; // Add more filenames as needed
+      const files = ["gpt-4o.json"]; // Add filenames here
 
       files.forEach((file) => {
         const option = document.createElement("option");
@@ -49,9 +47,6 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
   // Fetch and process data from the selected JSON file
   async function fetchAndProcessData(jsonPath) {
     try {
-      // Update the displayed file name
-      document.getElementById("current-file").textContent = `Currently Displaying: ${jsonPath.split('/').pop().replace('.json', '')}`;
-
       const response = await fetch(jsonPath);
       const data = await response.json();
 
@@ -69,12 +64,11 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
       data.forEach((item) => {
         if (item.result) {
           item.result.forEach((result) => {
-            // Check for each metric explicitly and push valid values
             if ("direct_match" in result && result.direct_match !== null) {
               metrics.direct_match.push(result.direct_match ? 1 : 0);
             }
             if ("fuzzy_match" in result && result.fuzzy_match !== null) {
-              metrics.fuzzy_match.push(result.fuzzy_match);
+              metrics.fuzzy_match.push(result.fuzzy_match / 100); // Scale to 0-1
             }
             if ("codebleu" in result && result.codebleu?.codebleu !== null) {
               metrics.codebleu.push(result.codebleu.codebleu);
@@ -87,6 +81,12 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
               result.codebertscore_rescaled?.F1 !== null
             ) {
               metrics.codebertscore_rescaled.push(result.codebertscore_rescaled.F1);
+            }
+            if ("code_success" in result && result.code_success !== null) {
+              metrics.code_success.push(result.code_success);
+            }
+            if ("syntax_match_score" in result && result.syntax_match_score !== null) {
+              metrics.syntax_match_score.push(result.syntax_match_score);
             }
           });
         }
@@ -106,6 +106,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
     }
   }
 
+  // Render the chart
   function renderChart(averages) {
     const ctx = document.getElementById("benchmarkChart").getContext("2d");
 
@@ -120,22 +121,26 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
         datasets: [
           {
             label: "Metrics (0-1 Range)",
-            data: Object.values(averages).map((value, index)// Ignore fuzzy_match for this dataset
-            ),
-            backgroundColor: "rgba(75, 192, 192, 0.2)",
-            borderColor: "rgba(75, 192, 192, 1)",
-            borderWidth: 1,
-            yAxisID: "y"
-          },
-          {
-            label: "Fuzzy Match (0-100 Range)",
-            data: Object.values(averages).map((value, index) =>
-              index === 1 ? value : null // Include only fuzzy_match for this dataset
-            ),
-            backgroundColor: "rgba(255, 159, 64, 0.2)",
-            borderColor: "rgba(255, 159, 64, 1)",
-            borderWidth: 1,
-            yAxisID: "y1"
+            data: Object.values(averages),
+            backgroundColor: [
+              "rgba(75, 192, 192, 0.2)",
+              "rgba(54, 162, 235, 0.2)",
+              "rgba(255, 206, 86, 0.2)",
+              "rgba(153, 102, 255, 0.2)",
+              "rgba(255, 159, 64, 0.2)",
+              "rgba(201, 203, 207, 0.2)",
+              "rgba(255, 99, 132, 0.2)"
+            ],
+            borderColor: [
+              "rgba(75, 192, 192, 1)",
+              "rgba(54, 162, 235, 1)",
+              "rgba(255, 206, 86, 1)",
+              "rgba(153, 102, 255, 1)",
+              "rgba(255, 159, 64, 1)",
+              "rgba(201, 203, 207, 1)",
+              "rgba(255, 99, 132, 1)"
+            ],
+            borderWidth: 1
           }
         ]
       },
@@ -144,14 +149,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
         maintainAspectRatio: true,
         scales: {
           y: {
-            type: "linear",
-            position: "left",
-            title: {
-              display: true,
-              text: "Metrics (0-1)"
-            },
             beginAtZero: true
-          },
+          }
         },
         plugins: {
           legend: {
