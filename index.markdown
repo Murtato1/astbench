@@ -17,12 +17,11 @@ Below is the visualization of the benchmark evaluation metrics:
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  // Relative path to your JSON file in the repo
   const jsonPath = "{{ site.baseurl }}/assets/json/benchmark_1.json";
 
   async function fetchAndProcessData() {
     try {
-      const response = await fetch(jsonPath); // Use relative path
+      const response = await fetch(jsonPath);
       const data = await response.json();
 
       const metrics = {
@@ -34,60 +33,75 @@ Below is the visualization of the benchmark evaluation metrics:
       };
 
       // Process JSON data
-      data.forEach(item => {
-        item.result.forEach(result => {
-          metrics.direct_match.push(result.direct_match ? 1 : 0);
-          metrics.fuzzy_match.push(result.fuzzy_match);
-          metrics.codebleu.push(result.codebleu.codebleu);
-          metrics.codebertscore.push(result.codebertscore.F1);
-          metrics.codebertscore_rescaled.push(result.codebertscore_rescaled.F1);
+      data.forEach((item) => {
+        item.result.forEach((result) => {
+          if (result.direct_match !== null) {
+            metrics.direct_match.push(result.direct_match ? 1 : 0);
+          }
+          if (result.fuzzy_match !== null) {
+            metrics.fuzzy_match.push(result.fuzzy_match);
+          }
+          if (result.codebleu && result.codebleu.codebleu !== null) {
+            metrics.codebleu.push(result.codebleu.codebleu);
+          }
+          if (result.codebertscore && result.codebertscore.F1 !== null) {
+            metrics.codebertscore.push(result.codebertscore.F1);
+          }
+          if (
+            result.codebertscore_rescaled &&
+            result.codebertscore_rescaled.F1 !== null
+          ) {
+            metrics.codebertscore_rescaled.push(result.codebertscore_rescaled.F1);
+          }
         });
       });
 
       // Calculate averages
       const averages = {};
       for (const [key, values] of Object.entries(metrics)) {
-        averages[key] = values.reduce((sum, val) => sum + val, 0) / values.length;
+        averages[key] = values.length
+          ? values.reduce((sum, val) => sum + val, 0) / values.length
+          : 0;
       }
 
-      renderChart(averages); // Pass processed data to the chart
+      renderChart(averages); // Render chart with processed data
     } catch (error) {
-      console.error('Error fetching or processing JSON data:', error);
+      console.error("Error fetching or processing JSON data:", error);
     }
   }
 
   function renderChart(averages) {
-    const ctx = document.getElementById('benchmarkChart').getContext('2d');
+    const ctx = document.getElementById("benchmarkChart").getContext("2d");
 
-    // Destroy existing chart if present
     if (window.currentChart) {
       window.currentChart.destroy();
     }
 
-    // Create new chart
     window.currentChart = new Chart(ctx, {
-      type: 'bar',
+      type: "bar",
       data: {
         labels: Object.keys(averages),
-        datasets: [{
-          label: 'Evaluation Metrics Averages',
-          data: Object.values(averages),
-          backgroundColor: [
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(153, 102, 255, 0.2)',
-            'rgba(255, 159, 64, 0.2)'
-          ],
-          borderColor: [
-            'rgba(75, 192, 192, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)'
-          ],
-          borderWidth: 1
-        }]
+        datasets: [
+          {
+            label: "Evaluation Metrics Averages",
+            data: Object.values(averages),
+            backgroundColor: [
+              "rgba(75, 192, 192, 0.2)",
+              "rgba(54, 162, 235, 0.2)",
+              "rgba(255, 206, 86, 0.2)",
+              "rgba(153, 102, 255, 0.2)",
+              "rgba(255, 159, 64, 0.2)"
+            ],
+            borderColor: [
+              "rgba(75, 192, 192, 1)",
+              "rgba(54, 162, 235, 1)",
+              "rgba(255, 206, 86, 1)",
+              "rgba(153, 102, 255, 1)",
+              "rgba(255, 159, 64, 1)"
+            ],
+            borderWidth: 1
+          }
+        ]
       },
       options: {
         responsive: true,
@@ -102,13 +116,12 @@ Below is the visualization of the benchmark evaluation metrics:
           },
           title: {
             display: true,
-            text: 'Benchmark Evaluation Metrics'
+            text: "Benchmark Evaluation Metrics"
           }
         }
       }
     });
   }
 
-  // Fetch and render chart on page load
-  fetchAndProcessData();
+  fetchAndProcessData(); // Fetch and render on page load
 </script>
