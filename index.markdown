@@ -3,7 +3,7 @@ layout: default
 title: Home
 ---
 
-# Welcome to AstroCopilot Benchmark
+# Welcome to AstroCopilot2 Benchmark
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
@@ -13,14 +13,23 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 Below is the visualization of the benchmark evaluation metrics:
 
-<canvas id="benchmarkChart" width="400" height="200"></canvas>
+# Benchmark Results
+
+<h3 id="current-file"></h3>
+<p>Below is the visualization of the benchmark evaluation metrics:</p>
+
+<canvas id="benchmarkChart" width="800" height="400"></canvas> <!-- Enlarged chart -->
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+  // Relative path to your JSON file
   const jsonPath = "{{ site.baseurl }}/assets/json/benchmark_1.json";
 
   async function fetchAndProcessData() {
     try {
+      // Update the displayed file name
+      document.getElementById("current-file").textContent = `Currently Displaying: ${jsonPath.split('/').pop()}`;
+
       const response = await fetch(jsonPath);
       const data = await response.json();
 
@@ -105,6 +114,7 @@ Below is the visualization of the benchmark evaluation metrics:
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false, // Ensures larger chart displays properly
         scales: {
           y: {
             beginAtZero: true
@@ -125,3 +135,4 @@ Below is the visualization of the benchmark evaluation metrics:
 
   fetchAndProcessData(); // Fetch and render on page load
 </script>
+
