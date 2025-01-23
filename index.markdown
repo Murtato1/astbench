@@ -9,74 +9,112 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 ## Bar Chart Example
 
-<canvas id="myChart" width="400" height="200"></canvas>
+<select id="file-selector">
+  <option>Select a result</option>
+</select>
+<div id="chart-container">
+  <canvas id="barChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const ctx = document.getElementById('myChart').getContext('2d');
-        const myChart = new Chart(ctx, {
-            type: 'bar',
+    const basePath = "{{ site.baseurl }}/assets/data/";
+
+    // Populate dropdown menu dynamically
+    const dropdown = document.getElementById("file-selector");
+
+    // If directory listing is enabled (optional: use file_list.json instead if needed)
+    async function getFiles() {
+        try {
+            const response = await fetch(basePath);
+            const text = await response.text();
+
+            // Parse directory listing for JSON files
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(text, "text/html");
+            const links = htmlDoc.querySelectorAll("a");
+
+            // Filter and add JSON files to dropdown
+            links.forEach(link => {
+                const fileName = link.getAttribute("href");
+                if (fileName.endsWith(".json")) {
+                    const option = document.createElement("option");
+                    option.value = fileName;
+                    option.textContent = fileName.replace(".json", "");
+                    dropdown.appendChild(option);
+                }
+            });
+        } catch (error) {
+            console.error("Error fetching files:", error);
+        }
+    }
+
+    getFiles();
+
+    // Event listener for dropdown selection
+    dropdown.addEventListener("change", function () {
+        const selectedFile = dropdown.value;
+        if (selectedFile !== "Select a result") {
+            fetch(basePath + selectedFile)
+                .then(response => response.json())
+                .then(data => updateChart(data));
+        }
+    });
+
+    function processJSON(json) {
+        const metrics = {
+            "direct_match": [],
+            "fuzzy_match": [],
+            "codebleu": [],
+            "codebertscore": [],
+            "codebertscore_rescaled": []
+        };
+
+        json.forEach(item => {
+            item.result.forEach(result => {
+                metrics.direct_match.push(result.direct_match ? 1 : 0);
+                metrics.fuzzy_match.push(result.fuzzy_match);
+                metrics.codebleu.push(result.codebleu.codebleu);
+                metrics.codebertscore.push(result.codebertscore.F1);
+                metrics.codebertscore_rescaled.push(result.codebertscore_rescaled.F1);
+            });
+        });
+
+        return Object.fromEntries(
+            Object.entries(metrics).map(([key, values]) => [
+                key, values.reduce((sum, value) => sum + value, 0) / values.length
+            ])
+        );
+    }
+
+    function updateChart(data) {
+        const ctx = document.getElementById("barChart").getContext("2d");
+        const averages = processJSON(data);
+
+        // Destroy existing chart if it exists
+        if (window.currentChart) {
+            window.currentChart.destroy();
+        }
+
+        // Create new chart with updated data
+        window.currentChart = new Chart(ctx, {
+            type: "bar",
             data: {
-                labels: ['Nebula A', 'Nebula B', 'Galaxy X', 'Galaxy Y'],
+                labels: Object.keys(averages),
                 datasets: [{
-                    label: 'Stellar Observations',
-                    data: [30, 50, 70, 90],
-                    backgroundColor: [
-                        'rgba(128, 0, 128, 0.7)', // Purple
-                        'rgba(0, 191, 255, 0.7)', // Blue
-                        'rgba(255, 99, 71, 0.7)',  // Red
-                        'rgba(50, 205, 50, 0.7)'  // Green
-                    ],
-                    borderColor: [
-                        'rgba(128, 0, 128, 1)',
-                        'rgba(0, 191, 255, 1)',
-                        'rgba(255, 99, 71, 1)',
-                        'rgba(50, 205, 50, 1)'
-                    ],
-                    borderWidth: 1
+                    label: "Evaluation Metrics",
+                    data: Object.values(averages),
+                    backgroundColor: ["#348AC7", "#7474BF", "#56CCF2", "#2F80ED", "#BB6BD9"]
                 }]
             },
             options: {
                 responsive: true,
                 plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            color: '#ffffff', // White legend text
-                            font: {
-                                family: 'Orbitron', // Stylish font
-                                size: 14
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        ticks: {
-                            color: '#d3d3d3', // Light grey x-axis labels
-                            font: {
-                                family: 'Open Sans',
-                                size: 12
-                            }
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)' // Subtle gridlines
-                        }
-                    },
-                    y: {
-                        ticks: {
-                            color: '#d3d3d3', // Light grey y-axis labels
-                            font: {
-                                family: 'Open Sans',
-                                size: 12
-                            }
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)' // Subtle gridlines
-                        },
-                        beginAtZero: true
-                    }
+                    legend: { display: true },
+                    title: { display: true, text: "Evaluation Metrics Averages" }
                 }
             }
         });
-    });
+    }
 </script>
+
