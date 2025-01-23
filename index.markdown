@@ -3,7 +3,7 @@ layout: default
 title: Home
 ---
 
-# Welcome to AstroCopilot Benchmark
+# Welcome to AstroCopilot Benchmark m
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
@@ -60,7 +60,9 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
         fuzzy_match: [],
         codebleu: [],
         codebertscore: [],
-        codebertscore_rescaled: []
+        codebertscore_rescaled: [],
+        code_success: [],
+        syntax_match_score: []
       };
 
       // Traverse every item in the JSON
@@ -118,8 +120,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
         datasets: [
           {
             label: "Metrics (0-1 Range)",
-            data: Object.values(averages).map((value, index) =>
-              index === 1 ? null : value // Ignore fuzzy_match for this dataset
+            data: Object.values(averages).map((value, index)// Ignore fuzzy_match for this dataset
             ),
             backgroundColor: "rgba(75, 192, 192, 0.2)",
             borderColor: "rgba(75, 192, 192, 1)",
@@ -151,18 +152,6 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
             },
             beginAtZero: true
           },
-          y1: {
-            type: "linear",
-            position: "right",
-            title: {
-              display: true,
-              text: "Fuzzy Match (0-100)"
-            },
-            grid: {
-              drawOnChartArea: false // Prevents overlap of grid lines
-            },
-            beginAtZero: true
-          }
         },
         plugins: {
           legend: {
@@ -170,7 +159,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
           },
           title: {
             display: true,
-            text: "Benchmark Evaluation Metrics with Dual Axes"
+            text: "Benchmark Evaluation Metrics"
           }
         }
       }
