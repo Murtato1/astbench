@@ -3,23 +3,15 @@ layout: default
 title: Home
 ---
 
-# Welcome to AstroCopilot2 Benchmark
+# Welcome to AstroCopilot Benchmark
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-## Benchmark Results
-
-<h3 id="current-file"></h3>
 
 <h2>Select a Benchmark Result</h2>
 <select id="file-selector">
   <option>Select a result</option>
 </select>
 <h3 id="current-file"></h3>
-<p>Below is the visualization of the benchmark evaluation metrics:</p>
-
-<canvas id="benchmarkChart" width="800" height="400"></canvas>
-
 
 <canvas id="benchmarkChart" width="800" height="400"></canvas> <!-- Enlarged chart -->
 
