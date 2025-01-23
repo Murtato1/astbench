@@ -15,12 +15,12 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 <canvas id="benchmarkChart" width="800" height="400"></canvas> <!-- Enlarged chart -->
 
 <script>
-  const jsonPath = "{{ site.baseurl }}/assets/json/benchmark_1.json";
+  const jsonPath = "{{ site.baseurl }}/assets/json/gpt-4o.json";
 
   async function fetchAndProcessData() {
     try {
-      // Update the displayed file name
-      document.getElementById("current-file").textContent = `Currently Displaying: ${jsonPath.split('/').pop()}`;
+      // Update the displayed file name without ".json"
+      document.getElementById("current-file").textContent = `Currently Displaying: ${jsonPath.split('/').pop().replace('.json', '')}`;
 
       const response = await fetch(jsonPath);
       const data = await response.json();
@@ -110,7 +110,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true, // Enforce fixed aspect ratio
+        maintainAspectRatio: true, // Ensure consistent aspect ratio
         scales: {
           y: {
             type: "linear",
