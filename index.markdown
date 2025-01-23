@@ -18,7 +18,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const basePath = "{{ site.baseurl }}/assets/data/";
+    const basePath = "{{ site.baseurl }}/assets/json/";
 
     // Populate dropdown menu dynamically
     const dropdown = document.getElementById("file-selector");
