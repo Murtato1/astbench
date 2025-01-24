@@ -18,20 +18,6 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
   <option>Select a result</option>
 </select>
 
-<h2>AstroCopilot Team</h2>
-<select id="team-selector">
-  <option>Select a team member</option>
-  <option value="professor1">
-    <img src="assets/pics/prof1.png" alt="Professor 1" style="height: 20px; vertical-align: middle;"> Professor Alice Smith
-  </option>
-  <option value="professor2">
-    <img src="assets/pics/prof2.png" alt="Professor 2" style="height: 20px; vertical-align: middle;"> Professor Bob Johnson
-  </option>
-  <option value="professor3">
-    <img src="assets/pics/prof3.png" alt="Professor 3" style="height: 20px; vertical-align: middle;"> Professor Clara Davis
-  </option>
-</select>
-
 <canvas id="benchmarkChart" width="800" height="400"></canvas>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -191,4 +177,44 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
   // Initialize the dropdown menu
   populateDropdown();
+</script>
+
+<h2>Team</h2>
+<div id="team-section" style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
+
+  <div class="team-member" style="text-align: center; max-width: 200px;">
+    <img src="assets/pics/member1.png" alt="Member 1" style="width: 100px; height: 100px; border-radius: 50%;">
+    <h3 style="margin: 10px 0;">Alex Johnson</h3>
+    <p style="color: gray; margin-bottom: 5px;">UT Austin, Astro Labs</p>
+    <button onclick="toggleDetails('member1')" style="background: none; border: none; color: blue; cursor: pointer;">[expand]</button>
+    <p id="details-member1" style="display: none; color: darkgray; margin-top: 10px;">Alex is a researcher focusing on space data processing and AI applications.</p>
+  </div>
+
+  <div class="team-member" style="text-align: center; max-width: 200px;">
+    <img src="assets/pics/member2.png" alt="Member 2" style="width: 100px; height: 100px; border-radius: 50%;">
+    <h3 style="margin: 10px 0;">Taylor Green</h3>
+    <p style="color: gray; margin-bottom: 5px;">Bespoke Labs</p>
+    <button onclick="toggleDetails('member2')" style="background: none; border: none; color: blue; cursor: pointer;">[expand]</button>
+    <p id="details-member2" style="display: none; color: darkgray; margin-top: 10px;">Taylor specializes in developing AI-driven tools for astrophysics research.</p>
+  </div>
+
+  <div class="team-member" style="text-align: center; max-width: 200px;">
+    <img src="assets/pics/member3.png" alt="Member 3" style="width: 100px; height: 100px; border-radius: 50%;">
+    <h3 style="margin: 10px 0;">Jordan Lee</h3>
+    <p style="color: gray; margin-bottom: 5px;">UT Austin</p>
+    <button onclick="toggleDetails('member3')" style="background: none; border: none; color: blue; cursor: pointer;">[expand]</button>
+    <p id="details-member3" style="display: none; color: darkgray; margin-top: 10px;">Jordan is working on large-scale simulations of galactic formations.</p>
+  </div>
+
+</div>
+
+<script>
+  function toggleDetails(memberId) {
+    const details = document.getElementById(`details-${memberId}`);
+    if (details.style.display === "none") {
+      details.style.display = "block";
+    } else {
+      details.style.display = "none";
+    }
+  }
 </script>
