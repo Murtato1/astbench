@@ -28,7 +28,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
   // Populate dropdown menu with JSON file options
   async function populateDropdown() {
     try {
-      const files = ["gpt-4o.json"]; // Add filenames here
+      const files = ["gpt-4o.json", "llama-3-1.json"]; // Add filenames here
 
       files.forEach((file) => {
         const option = document.createElement("option");
