@@ -73,7 +73,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
         syntax_match_score: []
       };
 
-      // Traverse data for the selected model and extract metrics
+      // Traverse filtered data for the selected model and extract metrics
       modelData.forEach((item) => {
         if (item.result) {
           item.result.forEach((result) => {
@@ -114,14 +114,14 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
           : 0;
       }
 
-      renderChart(averages); // Render chart with processed data
+      renderChart(selectedModel, averages); // Render chart with processed data
     } catch (error) {
       console.error("Error fetching or processing JSON data:", error);
     }
   }
 
   // Render the chart
-  function renderChart(averages) {
+  function renderChart(selectedModel, averages) {
     const ctx = document.getElementById("benchmarkChart").getContext("2d");
 
     if (window.currentChart) {
@@ -134,7 +134,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
         labels: Object.keys(averages),
         datasets: [
           {
-            label: "Metrics (0-1 Range)",
+            label: `Metrics for ${selectedModel} (0-1 Range)`,
             data: Object.values(averages),
             backgroundColor: [
               "rgba(75, 192, 192, 0.2)",
@@ -172,7 +172,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
           },
           title: {
             display: true,
-            text: `Benchmark Evaluation Metrics for ${dropdown.value}`
+            text: `Benchmark Evaluation Metrics for ${selectedModel}`
           }
         }
       }
@@ -185,12 +185,40 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 <h2>Team</h2>
 <div id="team-section" style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
-  <!-- Team Section Content (unchanged) -->
+
+  <div class="team-member" style="text-align: center; max-width: 200px;">
+    <img src="assets/pics/member1.png" alt="Member 1" style="width: 100px; height: 100px; border-radius: 50%;">
+    <h3 style="margin: 10px 0;">Faculty 1</h3>
+    <p style="color: gray; margin-bottom: 5px;">University name, Lab name</p>
+    <button onclick="toggleDetails('member1')" style="background: none; border: none; color: blue; cursor: pointer;">[expand]</button>
+    <p id="details-member1" style="display: none; color: darkgray; margin-top: 10px;">details about faculty member and a link or something similar.</p>
+  </div>
+
+  <div class="team-member" style="text-align: center; max-width: 200px;">
+    <img src="assets/pics/member2.png" alt="Member 2" style="width: 100px; height: 100px; border-radius: 50%;">
+    <h3 style="margin: 10px 0;">Faculty 2</h3>
+    <p style="color: gray; margin-bottom: 5px;">University name, Lab name</p>
+    <button onclick="toggleDetails('member2')" style="background: none; border: none; color: blue; cursor: pointer;">[expand]</button>
+    <p id="details-member2" style="display: none; color: darkgray; margin-top: 10px;">details about faculty member and a link or something similar.</p>
+  </div>
+
+  <div class="team-member" style="text-align: center; max-width: 200px;">
+    <img src="assets/pics/member3.png" alt="Member 3" style="width: 100px; height: 100px; border-radius: 50%;">
+    <h3 style="margin: 10px 0;">Faculty 3</h3>
+    <p style="color: gray; margin-bottom: 5px;">University name, Lab name</p>
+    <button onclick="toggleDetails('member3')" style="background: none; border: none; color: blue; cursor: pointer;">[expand]</button>
+    <p id="details-member3" style="display: none; color: darkgray; margin-top: 10px;">details about faculty member and a link or something similar.</p>
+  </div>
+
 </div>
 
 <script>
   function toggleDetails(memberId) {
     const details = document.getElementById(`details-${memberId}`);
-    details.style.display = details.style.display === "none" ? "block" : "none";
+    if (details.style.display === "none") {
+      details.style.display = "block";
+    } else {
+      details.style.display = "none";
+    }
   }
 </script>
