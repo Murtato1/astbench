@@ -5,18 +5,31 @@ title: Home
 
 # Welcome to AstroCopilot Benchmark
 
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
 <div style="text-align: center; margin-top: 20px;">
   <img src="assets/pics/rocket.png" alt="Rocket" style="height: 100px; margin: 0 10px;">
   <img src="assets/pics/longhorn.png" alt="Longhorn" style="height: 100px; margin: 0 10px;">
   <img src="assets/pics/planet.png" alt="Planet" style="height: 100px; margin: 0 10px;">
 </div>
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-
 <h2>Select a Benchmark Result</h2>
 <select id="file-selector">
   <option>Select a result</option>
+</select>
+
+<h2>AstroCopilot Team</h2>
+<select id="team-selector">
+  <option>Select a team member</option>
+  <option value="professor1">
+    <img src="assets/pics/prof1.png" alt="Professor 1" style="height: 20px; vertical-align: middle;"> Professor Alice Smith
+  </option>
+  <option value="professor2">
+    <img src="assets/pics/prof2.png" alt="Professor 2" style="height: 20px; vertical-align: middle;"> Professor Bob Johnson
+  </option>
+  <option value="professor3">
+    <img src="assets/pics/prof3.png" alt="Professor 3" style="height: 20px; vertical-align: middle;"> Professor Clara Davis
+  </option>
 </select>
 
 <canvas id="benchmarkChart" width="800" height="400"></canvas>
