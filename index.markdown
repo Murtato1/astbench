@@ -7,8 +7,14 @@ title: Home
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
+<div style="text-align: center; margin-top: 20px;">
+  <img src="assets/pics/rocket.png" alt="Rocket" style="height: 100px; margin: 0 10px;">
+  <img src="assets/pics/longhorn.png" alt="Longhorn" style="height: 100px; margin: 0 10px;">
+  <img src="assets/pics/planet.png" alt="Planet" style="height: 100px; margin: 0 10px;">
+</div>
+
 <h2>Select a Benchmark Result</h2>
-<select id="file-selector">
+<select id="model-selector">
   <option>Select a model</option>
 </select>
 
@@ -16,19 +22,19 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  const jsonPath = "{{ site.baseurl }}/assets/json/benchmark_results.json"; // Path to your JSON file
-  const dropdown = document.getElementById("file-selector");
+  const jsonPath = "{{ site.baseurl }}/assets/json/benchmark_results.json"; // Path to the single JSON file
+  const dropdown = document.getElementById("model-selector");
 
-  // Function to populate dropdown with model names from the JSON file
+  // Populate dropdown menu with model names
   async function populateDropdown() {
     try {
       const response = await fetch(jsonPath);
       const data = await response.json();
 
-      // Extract unique model names from the JSON
+      // Extract unique model names
       const models = [...new Set(data.map((item) => item.model.model))];
 
-      // Populate the dropdown
+      // Populate dropdown with models
       models.forEach((model) => {
         const option = document.createElement("option");
         option.value = model;
@@ -64,10 +70,10 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
         codebertscore: [],
         codebertscore_rescaled: [],
         code_success: [],
-        syntax_match_score: [],
+        syntax_match_score: []
       };
 
-      // Traverse model-specific data and extract metrics
+      // Traverse data for the selected model and extract metrics
       modelData.forEach((item) => {
         if (item.result) {
           item.result.forEach((result) => {
@@ -75,7 +81,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
               metrics.direct_match.push(result.direct_match ? 1 : 0);
             }
             if ("fuzzy_match" in result && result.fuzzy_match !== null) {
-              metrics.fuzzy_match.push(result.fuzzy_match / 100); // Normalize fuzzy_match to 0-1
+              metrics.fuzzy_match.push(result.fuzzy_match / 100); // Normalize fuzzy_match
             }
             if ("codebleu" in result && result.codebleu?.codebleu !== null) {
               metrics.codebleu.push(result.codebleu.codebleu);
@@ -89,6 +95,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
           });
         }
 
+        // Extract values from `result_summary`
         if (item.result_summary) {
           if ("code_success" in item.result_summary) {
             metrics.code_success.push(item.result_summary.code_success);
@@ -136,7 +143,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
               "rgba(153, 102, 255, 0.2)",
               "rgba(255, 159, 64, 0.2)",
               "rgba(201, 203, 207, 0.2)",
-              "rgba(255, 99, 132, 0.2)",
+              "rgba(255, 99, 132, 0.2)"
             ],
             borderColor: [
               "rgba(75, 192, 192, 1)",
@@ -145,33 +152,45 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
               "rgba(153, 102, 255, 1)",
               "rgba(255, 159, 64, 1)",
               "rgba(201, 203, 207, 1)",
-              "rgba(255, 99, 132, 1)",
+              "rgba(255, 99, 132, 1)"
             ],
-            borderWidth: 1,
-          },
-        ],
+            borderWidth: 1
+          }
+        ]
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false,
+        maintainAspectRatio: true,
         scales: {
           y: {
-            beginAtZero: true,
-          },
+            beginAtZero: true
+          }
         },
         plugins: {
           legend: {
-            display: true,
+            display: true
           },
           title: {
             display: true,
-            text: `Benchmark Metrics for ${dropdown.value}`,
-          },
-        },
-      },
+            text: `Benchmark Evaluation Metrics for ${dropdown.value}`
+          }
+        }
+      }
     });
   }
 
   // Initialize the dropdown menu
   populateDropdown();
+</script>
+
+<h2>Team</h2>
+<div id="team-section" style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
+  <!-- Team Section Content (unchanged) -->
+</div>
+
+<script>
+  function toggleDetails(memberId) {
+    const details = document.getElementById(`details-${memberId}`);
+    details.style.display = details.style.display === "none" ? "block" : "none";
+  }
 </script>
