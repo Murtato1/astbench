@@ -184,26 +184,26 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
   <div class="team-member" style="text-align: center; max-width: 200px;">
     <img src="assets/pics/member1.png" alt="Member 1" style="width: 100px; height: 100px; border-radius: 50%;">
-    <h3 style="margin: 10px 0;">Alex Johnson</h3>
-    <p style="color: gray; margin-bottom: 5px;">UT Austin, Astro Labs</p>
+    <h3 style="margin: 10px 0;">Faculty 1</h3>
+    <p style="color: gray; margin-bottom: 5px;">University name, Lab name</p>
     <button onclick="toggleDetails('member1')" style="background: none; border: none; color: blue; cursor: pointer;">[expand]</button>
-    <p id="details-member1" style="display: none; color: darkgray; margin-top: 10px;">Alex is a researcher focusing on space data processing and AI applications.</p>
+    <p id="details-member1" style="display: none; color: darkgray; margin-top: 10px;">details about faculty member and a link or something similar.</p>
   </div>
 
   <div class="team-member" style="text-align: center; max-width: 200px;">
     <img src="assets/pics/member2.png" alt="Member 2" style="width: 100px; height: 100px; border-radius: 50%;">
-    <h3 style="margin: 10px 0;">Taylor Green</h3>
-    <p style="color: gray; margin-bottom: 5px;">Bespoke Labs</p>
+    <h3 style="margin: 10px 0;">Faculty 2</h3>
+    <p style="color: gray; margin-bottom: 5px;">University name, Lab name</p>
     <button onclick="toggleDetails('member2')" style="background: none; border: none; color: blue; cursor: pointer;">[expand]</button>
-    <p id="details-member2" style="display: none; color: darkgray; margin-top: 10px;">Taylor specializes in developing AI-driven tools for astrophysics research.</p>
+    <p id="details-member2" style="display: none; color: darkgray; margin-top: 10px;">details about faculty member and a link or something similar.</p>
   </div>
 
   <div class="team-member" style="text-align: center; max-width: 200px;">
     <img src="assets/pics/member3.png" alt="Member 3" style="width: 100px; height: 100px; border-radius: 50%;">
-    <h3 style="margin: 10px 0;">Jordan Lee</h3>
-    <p style="color: gray; margin-bottom: 5px;">UT Austin</p>
+    <h3 style="margin: 10px 0;">Faculty 3</h3>
+    <p style="color: gray; margin-bottom: 5px;">University name, Lab name</p>
     <button onclick="toggleDetails('member3')" style="background: none; border: none; color: blue; cursor: pointer;">[expand]</button>
-    <p id="details-member3" style="display: none; color: darkgray; margin-top: 10px;">Jordan is working on large-scale simulations of galactic formations.</p>
+    <p id="details-member3" style="display: none; color: darkgray; margin-top: 10px;">details about faculty member and a link or something similar.</p>
   </div>
 
 </div>
