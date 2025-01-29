@@ -24,6 +24,51 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
   const jsonPath = "{{ site.baseurl }}/assets/json/benchmark_results.json"; // Path to the single JSON file
   const dropdown = document.getElementById("model-selector");
 
+  let chartData = {
+    labels: [],
+    datasets: []
+  };
+
+  let colors = [
+    "rgba(255, 99, 132, 0.5)",
+    "rgba(54, 162, 235, 0.5)",
+    "rgba(255, 206, 86, 0.5)",
+    "rgba(75, 192, 192, 0.5)",
+    "rgba(153, 102, 255, 0.5)",
+    "rgba(255, 159, 64, 0.5)",
+    "rgba(201, 203, 207, 0.5)"
+  ];
+  
+  let borderColors = [
+    "rgba(255, 99, 132, 1)",
+    "rgba(54, 162, 235, 1)",
+    "rgba(255, 206, 86, 1)",
+    "rgba(75, 192, 192, 1)",
+    "rgba(153, 102, 255, 1)",
+    "rgba(255, 159, 64, 1)",
+    "rgba(201, 203, 207, 1)"
+  ];
+
+  let usedColors = {}; // Track assigned colors per model
+  let currentColorIndex = 0;
+
+  let ctx = document.getElementById("benchmarkChart").getContext("2d");
+  let benchmarkChart = new Chart(ctx, {
+    type: "bar",
+    data: chartData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: {
+        y: { beginAtZero: true }
+      },
+      plugins: {
+        legend: { display: true },
+        title: { display: true, text: "Benchmark Evaluation Metrics" }
+      }
+    }
+  });
+
   // Populate dropdown menu with model names
   async function populateDropdown() {
     try {
@@ -58,6 +103,21 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
     try {
       const response = await fetch(jsonPath);
       const data = await response.json();
+
+      // Check if this model is already displayed, avoid duplicates
+      if (chartData.datasets.some(ds => ds.label === selectedModel)) {
+        console.warn(`${selectedModel} is already displayed.`);
+        return;
+      }
+
+      // Assign a unique color to the model
+      if (!(selectedModel in usedColors)) {
+        usedColors[selectedModel] = {
+          backgroundColor: colors[currentColorIndex % colors.length],
+          borderColor: borderColors[currentColorIndex % borderColors.length]
+        };
+        currentColorIndex++;
+      }
 
       // Filter data for the selected model
       const modelData = data.filter((item) => item.model.model === selectedModel);
@@ -113,74 +173,35 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
           : 0;
       }
 
-      renderChart(selectedModel, averages); // Render chart with processed data
+      updateChart(selectedModel, averages); // Render chart with processed data
     } catch (error) {
       console.error("Error fetching or processing JSON data:", error);
     }
   }
 
-  // Render the chart
-  function renderChart(selectedModel, averages) {
-    const ctx = document.getElementById("benchmarkChart").getContext("2d");
-
-    if (window.currentChart) {
-      window.currentChart.destroy();
+  // Update the chart with new model data
+  function updateChart(selectedModel, averages) {
+    if (chartData.labels.length === 0) {
+      chartData.labels = Object.keys(averages);
     }
 
-    window.currentChart = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: Object.keys(averages),
-        datasets: [
-          {
-            label: `Metrics for ${selectedModel} (0-1 Range)`,
-            data: Object.values(averages),
-            backgroundColor: [
-              "rgba(75, 192, 192, 0.2)",
-              "rgba(54, 162, 235, 0.2)",
-              "rgba(255, 206, 86, 0.2)",
-              "rgba(153, 102, 255, 0.2)",
-              "rgba(255, 159, 64, 0.2)",
-              "rgba(201, 203, 207, 0.2)",
-              "rgba(255, 99, 132, 0.2)"
-            ],
-            borderColor: [
-              "rgba(75, 192, 192, 1)",
-              "rgba(54, 162, 235, 1)",
-              "rgba(255, 206, 86, 1)",
-              "rgba(153, 102, 255, 1)",
-              "rgba(255, 159, 64, 1)",
-              "rgba(201, 203, 207, 1)",
-              "rgba(255, 99, 132, 1)"
-            ],
-            borderWidth: 1
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        },
-        plugins: {
-          legend: {
-            display: true
-          },
-          title: {
-            display: true,
-            text: `Benchmark Evaluation Metrics for ${selectedModel}`
-          }
-        }
-      }
+    chartData.datasets.push({
+      label: selectedModel,
+      data: Object.values(averages),
+      backgroundColor: usedColors[selectedModel].backgroundColor,
+      borderColor: usedColors[selectedModel].borderColor,
+      borderWidth: 1
     });
+
+    benchmarkChart.update();
   }
 
   // Initialize the dropdown menu
   populateDropdown();
 </script>
+
+
+
 
 <h2>Team</h2>
 <div id="team-section" style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
