@@ -17,6 +17,10 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
   <option>Select a model</option>
 </select>
 
+<button id="clear-chart" style="margin-top: 10px; padding: 8px 12px; background-color: red; color: white; border: none; cursor: pointer; border-radius: 5px;">
+  Clear Chart
+</button>
+
 <canvas id="benchmarkChart" width="800" height="400"></canvas>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -184,7 +188,7 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
     if (chartData.labels.length === 0) {
       chartData.labels = Object.keys(averages);
     }
-
+    
     chartData.datasets.push({
       label: selectedModel,
       data: Object.values(averages),
@@ -192,9 +196,18 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
       borderColor: usedColors[selectedModel].borderColor,
       borderWidth: 1
     });
-
+    
     benchmarkChart.update();
   }
+
+  document.getElementById("clear-chart").addEventListener("click", function () {
+    chartData.datasets = []; // Remove all datasets
+    chartData.labels = []; // Clear labels
+    benchmarkChart.update(); // Update the chart
+    usedColors = {}; // Reset color tracking
+    currentColorIndex = 0; // Reset color index
+    });
+
 
   // Initialize the dropdown menu
   populateDropdown();
