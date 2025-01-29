@@ -8,9 +8,8 @@ title: Home
 AstroCodeBench is a benchmark designed to test LLM proficiency with using astronomy domain code packages. View all the currently benchmarked models below.
 
 <div style="text-align: center; margin-top: 20px;">
-  <img src="assets/pics/rocket.png" alt="logo" style="height: 100px; margin: 0 10px;">
-  <img src="assets/pics/longhorn.png" alt="Longhorn" style="height: 100px; margin: 0 10px;">
-  <img src="assets/pics/planet.png" alt="Planet" style="height: 100px; margin: 0 10px;">
+  <img src="assets/pics/cosmic_logo.png" alt="Logo" style="height: 100px; margin: 0 10px;">
+  <img src="assets/pics/ut_logo.png" alt="Longhorn" style="height: 100px; margin: 0 10px;">
 </div>
 
 <h2>Select a Benchmark Result</h2>
