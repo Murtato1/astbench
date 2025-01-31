@@ -26,7 +26,7 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  const jsonPath = "{{ site.baseurl }}/assets/json/benchmark_results.json"; // Path to the single JSON file
+  const jsonPath = "{{ site.baseurl }}/assets/json/benchmark_results_old.json"; // Path to the single JSON file
   const dropdown = document.getElementById("model-selector");
 
   let chartData = {
