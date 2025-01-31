@@ -90,11 +90,14 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
       try {
         const response = await fetch(jsonBasePath + file);
         const data = await response.json();
-        
+
         data.forEach((item) => {
           let modelName = item.model?.model;
-          if (modelName && !allModels[modelName]) {
-            allModels[modelName] = datasetName;
+          if (modelName) {
+            if (!allModels[modelName]) {
+              allModels[modelName] = [];
+            }
+            allModels[modelName].push(datasetName);
           }
         });
       } catch (error) {
@@ -102,7 +105,7 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
       }
     }
 
-    for (const [model, dataset] of Object.entries(allModels)) {
+    for (const [model, datasetList] of Object.entries(allModels)) {
       const label = document.createElement("label");
       label.style.display = "block";
       label.style.cursor = "pointer";
@@ -115,14 +118,14 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
 
       checkbox.addEventListener("change", function () {
         if (this.checked) {
-          fetchAndProcessData(model, dataset);
+          datasetList.forEach(dataset => fetchAndProcessData(model, dataset));
         } else {
           removeModelFromChart(model);
         }
       });
 
       label.appendChild(checkbox);
-      label.appendChild(document.createTextNode(`${model} (${dataset})`));
+      label.appendChild(document.createTextNode(`${model} (${datasetList.join(", ")})`));
       dropdownMenu.appendChild(label);
     }
   }
@@ -134,8 +137,8 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
       const response = await fetch(jsonBasePath + selectedFile);
       const data = await response.json();
 
-      if (chartData.datasets.some(ds => ds.label === selectedModel)) {
-        console.warn(`${selectedModel} is already displayed.`);
+      if (chartData.datasets.some(ds => ds.label === `${selectedModel} (${dataset})`)) {
+        console.warn(`${selectedModel} (${dataset}) is already displayed.`);
         return;
       }
 
@@ -193,7 +196,7 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
           : 0;
       }
 
-      updateChart(selectedModel, averages);
+      updateChart(`${selectedModel} (${dataset})`, averages);
     } catch (error) {
       console.error("Error fetching or processing JSON data:", error);
     }
