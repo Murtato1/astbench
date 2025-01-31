@@ -17,7 +17,7 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
   <button id="dropdown-btn" style="padding: 8px 12px; background-color: #007BFF; color: white; border: none; cursor: pointer; border-radius: 5px;">
     Select Models ▼
   </button>
-  <div id="model-dropdown" style="display: none; position: absolute; background: white; border: 1px solid #ccc; width: 250px; max-height: 250px; overflow-y: auto;">
+  <div id="model-dropdown" style="display: none; position: absolute; background: white; border: 1px solid #ccc; width: 300px; max-height: 250px; overflow-y: auto; padding: 5px;">
   </div>
 </div>
 
@@ -52,7 +52,7 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
 
   let usedColors = {}; 
   let currentColorIndex = 0;
-  let allModels = {}; // Store unique models and datasets
+  let allModels = {}; 
 
   let ctx = document.getElementById("benchmarkChart").getContext("2d");
   let benchmarkChart = new Chart(ctx, {
@@ -84,7 +84,7 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
 
   async function populateDropdown() {
     dropdownMenu.innerHTML = "";
-    allModels = {};
+    allModels = {}; 
 
     for (const [file, datasetName] of Object.entries(datasets)) {
       try {
@@ -95,9 +95,9 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
           let modelName = item.model?.model;
           if (modelName) {
             if (!allModels[modelName]) {
-              allModels[modelName] = new Set();
+              allModels[modelName] = { old: false, colloquial: false };
             }
-            allModels[modelName].add(datasetName);
+            allModels[modelName][datasetName === "Old Benchmark" ? "old" : "colloquial"] = true;
           }
         });
       } catch (error) {
@@ -105,31 +105,48 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
       }
     }
 
-    for (const [model, datasetSet] of Object.entries(allModels)) {
-      const datasetList = Array.from(datasetSet).join(", ");
+    for (const [model, sources] of Object.entries(allModels)) {
+      const container = document.createElement("div");
+      container.style.marginBottom = "5px";
 
-      const label = document.createElement("label");
-      label.style.display = "block";
-      label.style.cursor = "pointer";
-      label.style.padding = "5px";
+      const modelLabel = document.createElement("strong");
+      modelLabel.textContent = model;
+      container.appendChild(modelLabel);
 
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.value = model;
-      checkbox.style.marginRight = "5px";
+      if (sources.old) {
+        container.appendChild(createCheckbox(model, "Old Benchmark"));
+      }
+      if (sources.colloquial) {
+        container.appendChild(createCheckbox(model, "Colloquial Query Benchmark"));
+      }
 
-      checkbox.addEventListener("change", function () {
-        if (this.checked) {
-          datasetSet.forEach(dataset => fetchAndProcessData(model, dataset));
-        } else {
-          removeModelFromChart(model);
-        }
-      });
-
-      label.appendChild(checkbox);
-      label.appendChild(document.createTextNode(`${model} (${datasetList})`));
-      dropdownMenu.appendChild(label);
+      dropdownMenu.appendChild(container);
     }
+  }
+
+  function createCheckbox(model, dataset) {
+    const label = document.createElement("label");
+    label.style.display = "block";
+    label.style.cursor = "pointer";
+    label.style.padding = "3px";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = model;
+    checkbox.dataset.source = dataset;
+    checkbox.style.marginRight = "5px";
+
+    checkbox.addEventListener("change", function () {
+      if (this.checked) {
+        fetchAndProcessData(model, dataset);
+      } else {
+        removeModelFromChart(`${model} (${dataset})`);
+      }
+    });
+
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(` ${dataset}`));
+    return label;
   }
 
   async function fetchAndProcessData(selectedModel, dataset) {
@@ -167,38 +184,16 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
               metrics.direct_match.push(result.direct_match ? 1 : 0);
             }
             if ("fuzzy_match" in result && result.fuzzy_match !== null) {
-              metrics.fuzzy_match.push(result.fuzzy_match / 100); 
+              metrics.fuzzy_match.push(result.fuzzy_match / 100);
             }
             if ("codebleu" in result && result.codebleu?.codebleu !== null) {
               metrics.codebleu.push(result.codebleu.codebleu);
             }
-            if ("codebertscore" in result && result.codebertscore?.F1 !== null) {
-              metrics.codebertscore.push(result.codebertscore.F1);
-            }
-            if ("codebertscore_rescaled" in result && result.codebertscore_rescaled?.F1 !== null) {
-              metrics.codebertscore_rescaled.push(result.codebertscore_rescaled.F1);
-            }
           });
-        }
-
-        if (item.result_summary) {
-          if ("code_success" in item.result_summary) {
-            metrics.code_success.push(item.result_summary.code_success);
-          }
-          if ("syntax_match_score" in item.result_summary) {
-            metrics.syntax_match_score.push(item.result_summary.syntax_match_score);
-          }
         }
       });
 
-      const averages = {};
-      for (const [key, values] of Object.entries(metrics)) {
-        averages[key] = values.length
-          ? values.reduce((sum, val) => sum + val, 0) / values.length
-          : 0;
-      }
-
-      updateChart(`${selectedModel} (${dataset})`, averages);
+      updateChart(`${selectedModel} (${dataset})`, metrics);
     } catch (error) {
       console.error("Error fetching or processing JSON data:", error);
     }
