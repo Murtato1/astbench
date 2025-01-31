@@ -12,6 +12,12 @@ title: Home
 
 AstroCodeBench is a benchmark designed to test LLM proficiency with using astronomy domain code packages. View all the currently benchmarked models below.
 
+<h2>Select Dataset</h2>
+<select id="dataset-selector" style="margin-bottom: 10px;">
+  <option value="benchmark_results_old.json">Original Results</option>
+  <option value="benchmark_results_new.json">Colloquial Query Results</option>
+</select>
+
 <h2>Select Benchmark Results</h2>
 <div style="position: relative; display: inline-block;">
   <button id="dropdown-btn" style="padding: 8px 12px; background-color: #007BFF; color: white; border: none; cursor: pointer; border-radius: 5px;">
@@ -25,7 +31,9 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  const jsonPath = "{{ site.baseurl }}/assets/json/benchmark_results_new.json"; 
+  let jsonBasePath = "{{ site.baseurl }}/assets/json/";
+  let selectedJsonFile = "benchmark_results_1.json"; // Default dataset
+  const datasetSelector = document.getElementById("dataset-selector");
   const dropdownBtn = document.getElementById("dropdown-btn");
   const dropdownMenu = document.getElementById("model-dropdown");
 
@@ -35,22 +43,16 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
   };
 
   let colors = [
-    "rgba(255, 99, 132, 0.5)",
-    "rgba(54, 162, 235, 0.5)",
-    "rgba(255, 206, 86, 0.5)",
-    "rgba(75, 192, 192, 0.5)",
-    "rgba(153, 102, 255, 0.5)",
-    "rgba(255, 159, 64, 0.5)",
+    "rgba(255, 99, 132, 0.5)", "rgba(54, 162, 235, 0.5)",
+    "rgba(255, 206, 86, 0.5)", "rgba(75, 192, 192, 0.5)",
+    "rgba(153, 102, 255, 0.5)", "rgba(255, 159, 64, 0.5)",
     "rgba(201, 203, 207, 0.5)"
   ];
-  
+
   let borderColors = [
-    "rgba(255, 99, 132, 1)",
-    "rgba(54, 162, 235, 1)",
-    "rgba(255, 206, 86, 1)",
-    "rgba(75, 192, 192, 1)",
-    "rgba(153, 102, 255, 1)",
-    "rgba(255, 159, 64, 1)",
+    "rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)",
+    "rgba(255, 206, 86, 1)", "rgba(75, 192, 192, 1)",
+    "rgba(153, 102, 255, 1)", "rgba(255, 159, 64, 1)",
     "rgba(201, 203, 207, 1)"
   ];
 
@@ -64,9 +66,7 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
     options: {
       responsive: true,
       maintainAspectRatio: true,
-      scales: {
-        y: { beginAtZero: true }
-      },
+      scales: { y: { beginAtZero: true } },
       plugins: {
         legend: { display: true },
         title: { display: true, text: "Benchmark Evaluation Metrics" }
@@ -86,12 +86,23 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
     }
   });
 
+  // Handle dataset selection change
+  datasetSelector.addEventListener("change", function () {
+    selectedJsonFile = this.value; 
+    chartData.datasets = []; // Reset chart
+    chartData.labels = []; 
+    benchmarkChart.update();
+    usedColors = {}; 
+    currentColorIndex = 0; 
+    populateDropdown(); // Refresh model list
+  });
+
   // Populate dropdown menu with model checkboxes
   async function populateDropdown() {
     try {
-      const response = await fetch(jsonPath);
+      const response = await fetch(jsonBasePath + selectedJsonFile);
       const data = await response.json();
-      const models = [...new Set(data.map((item) => item.model.model).filter(m => m))]; // Ensure valid models
+      const models = [...new Set(data.map((item) => item.model.model).filter(m => m))];
 
       dropdownMenu.innerHTML = ""; // Clear old entries
 
@@ -126,7 +137,7 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
   // Fetch and process data for the selected model
   async function fetchAndProcessData(selectedModel) {
     try {
-      const response = await fetch(jsonPath);
+      const response = await fetch(jsonBasePath + selectedJsonFile);
       const data = await response.json();
 
       if (chartData.datasets.some(ds => ds.label === selectedModel)) {
@@ -145,13 +156,9 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
       const modelData = data.filter((item) => item.model.model === selectedModel);
 
       const metrics = {
-        direct_match: [],
-        fuzzy_match: [],
-        codebleu: [],
-        codebertscore: [],
-        codebertscore_rescaled: [],
-        code_success: [],
-        syntax_match_score: []
+        direct_match: [], fuzzy_match: [], codebleu: [],
+        codebertscore: [], codebertscore_rescaled: [],
+        code_success: [], syntax_match_score: []
       };
 
       modelData.forEach((item) => {
@@ -200,22 +207,6 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
 
   function removeModelFromChart(selectedModel) {
     chartData.datasets = chartData.datasets.filter(ds => ds.label !== selectedModel);
-    benchmarkChart.update();
-  }
-
-  function updateChart(selectedModel, averages) {
-    if (chartData.labels.length === 0) {
-      chartData.labels = Object.keys(averages);
-    }
-
-    chartData.datasets.push({
-      label: selectedModel,
-      data: Object.values(averages),
-      backgroundColor: usedColors[selectedModel].backgroundColor,
-      borderColor: usedColors[selectedModel].borderColor,
-      borderWidth: 1
-    });
-
     benchmarkChart.update();
   }
 
