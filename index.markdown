@@ -102,7 +102,7 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
     try {
       const response = await fetch(jsonBasePath + selectedJsonFile);
       const data = await response.json();
-      const models = [...new Set(data.map((item) => item.model?.model).filter(m => m))]; // Ensure only valid model names appear
+      const models = [...new Set(data.map((item) => item.model?.model).filter(m => m))];
 
       dropdownMenu.innerHTML = ""; // Clear old entries
 
