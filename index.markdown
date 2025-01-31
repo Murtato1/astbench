@@ -32,7 +32,7 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   let jsonBasePath = "{{ site.baseurl }}/assets/json/";
-  let selectedJsonFile = "benchmark_results_1.json"; // Default dataset
+  let selectedJsonFile = "benchmark_results_old.json"; // Default dataset
   const datasetSelector = document.getElementById("dataset-selector");
   const dropdownBtn = document.getElementById("dropdown-btn");
   const dropdownMenu = document.getElementById("model-dropdown");
@@ -88,8 +88,8 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
 
   // Handle dataset selection change
   datasetSelector.addEventListener("change", function () {
-    selectedJsonFile = this.value; 
-    chartData.datasets = []; // Reset chart
+    selectedJsonFile = this.value;
+    chartData.datasets = []; 
     chartData.labels = []; 
     benchmarkChart.update();
     usedColors = {}; 
@@ -102,7 +102,7 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
     try {
       const response = await fetch(jsonBasePath + selectedJsonFile);
       const data = await response.json();
-      const models = [...new Set(data.map((item) => item.model.model).filter(m => m))];
+      const models = [...new Set(data.map((item) => item.model?.model).filter(m => m))]; // Ensure only valid model names appear
 
       dropdownMenu.innerHTML = ""; // Clear old entries
 
