@@ -52,7 +52,7 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
 
   let usedColors = {}; 
   let currentColorIndex = 0;
-  let allModels = {}; // Store model names and corresponding dataset
+  let allModels = {}; // Store unique models and datasets
 
   let ctx = document.getElementById("benchmarkChart").getContext("2d");
   let benchmarkChart = new Chart(ctx, {
@@ -90,11 +90,14 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
       try {
         const response = await fetch(jsonBasePath + file);
         const data = await response.json();
-        
+
         data.forEach((item) => {
           let modelName = item.model?.model;
-          if (modelName && !allModels[modelName]) {
-            allModels[modelName] = datasetName;
+          if (modelName) {
+            if (!allModels[modelName]) {
+              allModels[modelName] = new Set();
+            }
+            allModels[modelName].add(datasetName);
           }
         });
       } catch (error) {
@@ -102,7 +105,9 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
       }
     }
 
-    for (const [model, dataset] of Object.entries(allModels)) {
+    for (const [model, datasetSet] of Object.entries(allModels)) {
+      const datasetList = Array.from(datasetSet).join(", ");
+
       const label = document.createElement("label");
       label.style.display = "block";
       label.style.cursor = "pointer";
@@ -115,114 +120,89 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
 
       checkbox.addEventListener("change", function () {
         if (this.checked) {
-          fetchAndProcessData(model, dataset);
+          datasetSet.forEach(dataset => fetchAndProcessData(model, dataset));
         } else {
           removeModelFromChart(model);
         }
       });
 
       label.appendChild(checkbox);
-      label.appendChild(document.createTextNode(`${model} (${dataset})`));
+      label.appendChild(document.createTextNode(`${model} (${datasetList})`));
       dropdownMenu.appendChild(label);
     }
   }
 
   async function fetchAndProcessData(selectedModel, dataset) {
     let selectedFile = dataset === "Colloquial Query Benchmark" ? "benchmark_results_new.json" : "benchmark_results_old.json";
-    let fullModelLabel = `${selectedModel} (${dataset})`;
-
+    
     try {
-        const response = await fetch(jsonBasePath + selectedFile);
-        const data = await response.json();
+      const response = await fetch(jsonBasePath + selectedFile);
+      const data = await response.json();
 
-        if (chartData.datasets.some(ds => ds.label === fullModelLabel)) {
-            console.warn(`${fullModelLabel} is already displayed.`);
-            return;
-        }
+      if (chartData.datasets.some(ds => ds.label === `${selectedModel} (${dataset})`)) {
+        console.warn(`${selectedModel} (${dataset}) is already displayed.`);
+        return;
+      }
 
-        if (!(fullModelLabel in usedColors)) {
-            usedColors[fullModelLabel] = {
-                backgroundColor: colors[currentColorIndex % colors.length],
-                borderColor: borderColors[currentColorIndex % borderColors.length]
-            };
-            currentColorIndex++;
-        }
-
-        console.log("Fetched JSON Data:", data);
-        console.log("Filtered Models:", data.map(item => item.model?.model));
-
-        const modelData = data.filter((item) => item.model?.model === selectedModel);
-
-        if (modelData.length === 0) {
-            console.warn(`No data found for model: ${selectedModel}`);
-            return;
-        }
-
-        const metrics = {
-            direct_match: [], fuzzy_match: [], codebleu: [],
-            codebertscore: [], codebertscore_rescaled: [],
-            code_success: [], syntax_match_score: []
+      if (!(selectedModel in usedColors)) {
+        usedColors[selectedModel] = {
+          backgroundColor: colors[currentColorIndex % colors.length],
+          borderColor: borderColors[currentColorIndex % borderColors.length]
         };
+        currentColorIndex++;
+      }
 
-        modelData.forEach((item) => {
-            if (item.result) {
-                item.result.forEach((result) => {
-                    if ("direct_match" in result && result.direct_match !== null) {
-                        metrics.direct_match.push(result.direct_match ? 1 : 0);
-                    }
-                    if ("fuzzy_match" in result && result.fuzzy_match !== null) {
-                        metrics.fuzzy_match.push(result.fuzzy_match / 100); 
-                    }
-                    if ("codebleu" in result && result.codebleu?.codebleu !== null) {
-                        metrics.codebleu.push(result.codebleu.codebleu);
-                    }
-                    if ("codebertscore" in result && result.codebertscore?.F1 !== null) {
-                        metrics.codebertscore.push(result.codebertscore.F1);
-                    }
-                    if ("codebertscore_rescaled" in result && result.codebertscore_rescaled?.F1 !== null) {
-                        metrics.codebertscore_rescaled.push(result.codebertscore_rescaled.F1);
-                    }
-                });
+      const modelData = data.filter((item) => item.model.model === selectedModel);
+
+      const metrics = {
+        direct_match: [], fuzzy_match: [], codebleu: [],
+        codebertscore: [], codebertscore_rescaled: [],
+        code_success: [], syntax_match_score: []
+      };
+
+      modelData.forEach((item) => {
+        if (item.result) {
+          item.result.forEach((result) => {
+            if ("direct_match" in result && result.direct_match !== null) {
+              metrics.direct_match.push(result.direct_match ? 1 : 0);
             }
-
-            if (item.result_summary) {
-                if ("code_success" in item.result_summary) {
-                    metrics.code_success.push(item.result_summary.code_success);
-                }
-                if ("syntax_match_score" in item.result_summary) {
-                    metrics.syntax_match_score.push(item.result_summary.syntax_match_score);
-                }
+            if ("fuzzy_match" in result && result.fuzzy_match !== null) {
+              metrics.fuzzy_match.push(result.fuzzy_match / 100); 
             }
-        });
-
-        const averages = {};
-        for (const [key, values] of Object.entries(metrics)) {
-            averages[key] = values.length
-                ? values.reduce((sum, val) => sum + val, 0) / values.length
-                : 0;
+            if ("codebleu" in result && result.codebleu?.codebleu !== null) {
+              metrics.codebleu.push(result.codebleu.codebleu);
+            }
+            if ("codebertscore" in result && result.codebertscore?.F1 !== null) {
+              metrics.codebertscore.push(result.codebertscore.F1);
+            }
+            if ("codebertscore_rescaled" in result && result.codebertscore_rescaled?.F1 !== null) {
+              metrics.codebertscore_rescaled.push(result.codebertscore_rescaled.F1);
+            }
+          });
         }
 
-        updateChart(fullModelLabel, averages);
+        if (item.result_summary) {
+          if ("code_success" in item.result_summary) {
+            metrics.code_success.push(item.result_summary.code_success);
+          }
+          if ("syntax_match_score" in item.result_summary) {
+            metrics.syntax_match_score.push(item.result_summary.syntax_match_score);
+          }
+        }
+      });
+
+      const averages = {};
+      for (const [key, values] of Object.entries(metrics)) {
+        averages[key] = values.length
+          ? values.reduce((sum, val) => sum + val, 0) / values.length
+          : 0;
+      }
+
+      updateChart(`${selectedModel} (${dataset})`, averages);
     } catch (error) {
-        console.error("Error fetching or processing JSON data:", error);
+      console.error("Error fetching or processing JSON data:", error);
     }
-}
-
-function updateChart(selectedModel, averages) {
-    if (chartData.labels.length === 0) {
-        chartData.labels = Object.keys(averages);
-    }
-
-    chartData.datasets.push({
-        label: selectedModel,
-        data: Object.values(averages),
-        backgroundColor: usedColors[selectedModel].backgroundColor,
-        borderColor: usedColors[selectedModel].borderColor,
-        borderWidth: 1
-    });
-
-    benchmarkChart.update();
-}
+  }
 
   function removeModelFromChart(selectedModel) {
     chartData.datasets = chartData.datasets.filter(ds => ds.label !== selectedModel);
