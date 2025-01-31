@@ -130,29 +130,39 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
     }
   }
 
-  async function fetchAndProcessData(selectedModel, dataset) {
+async function fetchAndProcessData(selectedModel, dataset) {
     let selectedFile = dataset === "Colloquial Query Benchmark" ? "benchmark_results_new.json" : "benchmark_results_old.json";
-    let fullModelLabel = `${selectedModel} (${dataset})`;
-
+    
     try {
         const response = await fetch(jsonBasePath + selectedFile);
         const data = await response.json();
 
-        if (chartData.datasets.some(ds => ds.label === fullModelLabel)) {
-            console.warn(`${fullModelLabel} is already displayed.`);
+        // Add some debug logging
+        console.log("Selected file:", selectedFile);
+        console.log("Dataset:", dataset);
+        console.log("Data loaded:", data);
+
+        if (chartData.datasets.some(ds => ds.label === selectedModel)) {
+            console.warn(`${selectedModel} is already displayed.`);
             return;
         }
 
-        if (!(fullModelLabel in usedColors)) {
-            usedColors[fullModelLabel] = {
+        if (!(selectedModel in usedColors)) {
+            usedColors[selectedModel] = {
                 backgroundColor: colors[currentColorIndex % colors.length],
                 borderColor: borderColors[currentColorIndex % borderColors.length]
             };
             currentColorIndex++;
         }
 
-        console.log("Fetched JSON Data:", data);
-        console.log("Filtered Models:", data.map(item => item.model?.model));
+        // Add dataset name to the model label
+        const modelLabel = `${selectedModel} (${dataset})`;
+        const modelData = data.filter((item) => item.model?.model === selectedModel);
+
+        // Debug log for filtered data
+        console.log("Filtered model data:", modelData);
+
+        // Rest of your existing metrics processing code...
 
         const modelData = data.filter((item) => item.model?.model === selectedModel);
 
