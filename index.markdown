@@ -12,18 +12,12 @@ title: Home
 
 AstroCodeBench is a benchmark designed to test LLM proficiency with using astronomy domain code packages. View all the currently benchmarked models below.
 
-<h2>Select Dataset</h2>
-<select id="dataset-selector" style="margin-bottom: 10px;">
-  <option value="benchmark_results_old.json">Original Results</option>
-  <option value="benchmark_results_new.json">Colloquial Query Results</option>
-</select>
-
 <h2>Select Benchmark Results</h2>
 <div style="position: relative; display: inline-block;">
   <button id="dropdown-btn" style="padding: 8px 12px; background-color: #007BFF; color: white; border: none; cursor: pointer; border-radius: 5px;">
     Select Models ▼
   </button>
-  <div id="model-dropdown" style="display: none; position: absolute; background: white; border: 1px solid #ccc; width: 200px; max-height: 200px; overflow-y: auto;">
+  <div id="model-dropdown" style="display: none; position: absolute; background: white; border: 1px solid #ccc; width: 250px; max-height: 250px; overflow-y: auto;">
   </div>
 </div>
 
@@ -32,10 +26,10 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   let jsonBasePath = "{{ site.baseurl }}/assets/json/";
-  let selectedJsonFile = "benchmark_results_old.json"; // Default dataset
-  const datasetSelector = document.getElementById("dataset-selector");
-  const dropdownBtn = document.getElementById("dropdown-btn");
-  const dropdownMenu = document.getElementById("model-dropdown");
+  const datasets = {
+    "benchmark_results_old.json": "Old Benchmark",
+    "benchmark_results_new.json": "Colloquial Query Benchmark"
+  };
 
   let chartData = {
     labels: [],
@@ -58,6 +52,7 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
 
   let usedColors = {}; 
   let currentColorIndex = 0;
+  let allModels = {}; // Store model names and corresponding dataset
 
   let ctx = document.getElementById("benchmarkChart").getContext("2d");
   let benchmarkChart = new Chart(ctx, {
@@ -74,70 +69,69 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
     }
   });
 
-  // Show/Hide Dropdown Menu
+  const dropdownBtn = document.getElementById("dropdown-btn");
+  const dropdownMenu = document.getElementById("model-dropdown");
+
   dropdownBtn.addEventListener("click", () => {
     dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
   });
 
-  // Close dropdown if clicked outside
   document.addEventListener("click", (event) => {
     if (!dropdownBtn.contains(event.target) && !dropdownMenu.contains(event.target)) {
       dropdownMenu.style.display = "none";
     }
   });
 
-  // Handle dataset selection change
-  datasetSelector.addEventListener("change", function () {
-    selectedJsonFile = this.value;
-    chartData.datasets = []; 
-    chartData.labels = []; 
-    benchmarkChart.update();
-    usedColors = {}; 
-    currentColorIndex = 0; 
-    populateDropdown(); // Refresh model list
-  });
-
-  // Populate dropdown menu with model checkboxes
   async function populateDropdown() {
-    try {
-      const response = await fetch(jsonBasePath + selectedJsonFile);
-      const data = await response.json();
-      const models = [...new Set(data.map((item) => item.model?.model).filter(m => m))];
+    dropdownMenu.innerHTML = "";
+    allModels = {};
 
-      dropdownMenu.innerHTML = ""; // Clear old entries
-
-      models.forEach((model) => {
-        const label = document.createElement("label");
-        label.style.display = "block";
-        label.style.cursor = "pointer";
-        label.style.padding = "5px";
-
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.value = model;
-        checkbox.style.marginRight = "5px";
-
-        checkbox.addEventListener("change", function () {
-          if (this.checked) {
-            fetchAndProcessData(model);
-          } else {
-            removeModelFromChart(model);
+    for (const [file, datasetName] of Object.entries(datasets)) {
+      try {
+        const response = await fetch(jsonBasePath + file);
+        const data = await response.json();
+        
+        data.forEach((item) => {
+          let modelName = item.model?.model;
+          if (modelName && !allModels[modelName]) {
+            allModels[modelName] = datasetName;
           }
         });
+      } catch (error) {
+        console.error(`Error loading ${file}:`, error);
+      }
+    }
 
-        label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(model));
-        dropdownMenu.appendChild(label);
+    for (const [model, dataset] of Object.entries(allModels)) {
+      const label = document.createElement("label");
+      label.style.display = "block";
+      label.style.cursor = "pointer";
+      label.style.padding = "5px";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.value = model;
+      checkbox.style.marginRight = "5px";
+
+      checkbox.addEventListener("change", function () {
+        if (this.checked) {
+          fetchAndProcessData(model, dataset);
+        } else {
+          removeModelFromChart(model);
+        }
       });
-    } catch (error) {
-      console.error("Error populating dropdown:", error);
+
+      label.appendChild(checkbox);
+      label.appendChild(document.createTextNode(`${model} (${dataset})`));
+      dropdownMenu.appendChild(label);
     }
   }
 
-  // Fetch and process data for the selected model
-  async function fetchAndProcessData(selectedModel) {
+  async function fetchAndProcessData(selectedModel, dataset) {
+    let selectedFile = dataset === "Colloquial Query Benchmark" ? "benchmark_results_new.json" : "benchmark_results_old.json";
+    
     try {
-      const response = await fetch(jsonBasePath + selectedJsonFile);
+      const response = await fetch(jsonBasePath + selectedFile);
       const data = await response.json();
 
       if (chartData.datasets.some(ds => ds.label === selectedModel)) {
@@ -203,6 +197,22 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
     } catch (error) {
       console.error("Error fetching or processing JSON data:", error);
     }
+  }
+
+  function updateChart(selectedModel, averages) {
+    if (chartData.labels.length === 0) {
+      chartData.labels = Object.keys(averages);
+    }
+    
+    chartData.datasets.push({
+      label: selectedModel,
+      data: Object.values(averages),
+      backgroundColor: usedColors[selectedModel].backgroundColor,
+      borderColor: usedColors[selectedModel].borderColor,
+      borderWidth: 1
+    });
+    
+    benchmarkChart.update();
   }
 
   function removeModelFromChart(selectedModel) {
