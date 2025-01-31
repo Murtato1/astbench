@@ -1,4 +1,4 @@
- ---
+---
 layout: default
 title: Home
 ---
@@ -52,7 +52,7 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
 
   let usedColors = {}; 
   let currentColorIndex = 0;
-  let allModels = {}; // Store model names and corresponding dataset
+  let allModels = {}; 
 
   let ctx = document.getElementById("benchmarkChart").getContext("2d");
   let benchmarkChart = new Chart(ctx, {
@@ -93,7 +93,7 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
         
         data.forEach((item) => {
           let modelName = item.model?.model;
-          if (modelName && !allModels[modelName]) {
+          if (modelName) {
             allModels[modelName] = datasetName;
           }
         });
@@ -148,50 +148,7 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
       }
 
       const modelData = data.filter((item) => item.model.model === selectedModel);
-
-      const metrics = {
-        direct_match: [], fuzzy_match: [], codebleu: [],
-        codebertscore: [], codebertscore_rescaled: [],
-        code_success: [], syntax_match_score: []
-      };
-
-      modelData.forEach((item) => {
-        if (item.result) {
-          item.result.forEach((result) => {
-            if ("direct_match" in result && result.direct_match !== null) {
-              metrics.direct_match.push(result.direct_match ? 1 : 0);
-            }
-            if ("fuzzy_match" in result && result.fuzzy_match !== null) {
-              metrics.fuzzy_match.push(result.fuzzy_match / 100); 
-            }
-            if ("codebleu" in result && result.codebleu?.codebleu !== null) {
-              metrics.codebleu.push(result.codebleu.codebleu);
-            }
-            if ("codebertscore" in result && result.codebertscore?.F1 !== null) {
-              metrics.codebertscore.push(result.codebertscore.F1);
-            }
-            if ("codebertscore_rescaled" in result && result.codebertscore_rescaled?.F1 !== null) {
-              metrics.codebertscore_rescaled.push(result.codebertscore_rescaled.F1);
-            }
-          });
-        }
-
-        if (item.result_summary) {
-          if ("code_success" in item.result_summary) {
-            metrics.code_success.push(item.result_summary.code_success);
-          }
-          if ("syntax_match_score" in item.result_summary) {
-            metrics.syntax_match_score.push(item.result_summary.syntax_match_score);
-          }
-        }
-      });
-
-      const averages = {};
-      for (const [key, values] of Object.entries(metrics)) {
-        averages[key] = values.length
-          ? values.reduce((sum, val) => sum + val, 0) / values.length
-          : 0;
-      }
+      const averages = modelData.length ? modelData[0].result_summary || {} : {};
 
       updateChart(selectedModel, averages);
     } catch (error) {
