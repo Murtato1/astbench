@@ -21,22 +21,15 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
   </div>
 </div>
 
-<<<<<<< HEAD
-=======
 <input type="file" id="json-upload" accept=".json">
 
-
->>>>>>> 1ebf8cb (Added json upload capability)
 <canvas id="benchmarkChart" width="800" height="400"></canvas>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-<<<<<<< HEAD
-=======
 
   let allModels = {}; // Store unique models and datasets
 
->>>>>>> 1ebf8cb (Added json upload capability)
   const jsonSources = [
     { path: "{{ site.baseurl }}/assets/json/benchmark_results_new.json", prefix: "[New] " },
     { path: "{{ site.baseurl }}/assets/json/benchmark_results_old.json", prefix: "[Old] " }
@@ -261,8 +254,6 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
 
   populateDropdown();
 </script>
-<<<<<<< HEAD
-=======
 
 <script>
 const fileInput = document.getElementById("json-upload");
@@ -412,4 +403,3 @@ function fetchAndProcessUploadedData(jsonData, selectedModel, sourcePrefix) {
 }
 
 </script>
->>>>>>> 1ebf8cb (Added json upload capability)
