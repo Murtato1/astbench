@@ -21,10 +21,22 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
   </div>
 </div>
 
+<<<<<<< HEAD
+=======
+<input type="file" id="json-upload" accept=".json">
+
+
+>>>>>>> 1ebf8cb (Added json upload capability)
 <canvas id="benchmarkChart" width="800" height="400"></canvas>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+<<<<<<< HEAD
+=======
+
+  let allModels = {}; // Store unique models and datasets
+
+>>>>>>> 1ebf8cb (Added json upload capability)
   const jsonSources = [
     { path: "{{ site.baseurl }}/assets/json/benchmark_results_new.json", prefix: "[New] " },
     { path: "{{ site.baseurl }}/assets/json/benchmark_results_old.json", prefix: "[Old] " }
@@ -249,3 +261,155 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
 
   populateDropdown();
 </script>
+<<<<<<< HEAD
+=======
+
+<script>
+const fileInput = document.getElementById("json-upload");
+
+fileInput.addEventListener("change", function (event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function (e) {
+    try {
+      const jsonString = e.target.result.trim(); // Trim whitespace to avoid errors
+      console.log("Raw JSON String:", jsonString); // Debugging log
+
+      const jsonData = JSON.parse(jsonString);
+
+      if (!Array.isArray(jsonData)) {
+        throw new Error("Invalid JSON format: Root must be an array.");
+      }
+
+      console.log("Parsed JSON:", jsonData); // Debugging log
+      processUploadedData(jsonData, file.name);
+    } catch (error) {
+      console.error("Error processing uploaded JSON:", error);
+      alert("Error: Unable to read JSON file. Ensure it's in the correct format.");
+    }
+  };
+
+  reader.onerror = function () {
+    alert("Error reading the file. Please try again.");
+  };
+
+  reader.readAsText(file);
+});
+
+
+function processUploadedData(jsonData, filename) {
+  const sourcePrefix = `[Uploaded] ${filename.replace(".json", "")}`;
+  const models = new Set();
+
+  jsonData.forEach((item) => {
+    if (item.model && item.model.model) {
+      models.add(item.model.model);
+    }
+  });
+
+  // Add uploaded models to dropdown
+  models.forEach((model) => {
+    const modelLabel = `${sourcePrefix} ${model}`;
+
+    if (!allModels[modelLabel]) {
+      allModels[modelLabel] = new Set(["Uploaded File"]);
+    }
+
+    const label = document.createElement("label");
+    label.style.display = "block";
+    label.style.cursor = "pointer";
+    label.style.padding = "5px";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = modelLabel;
+    checkbox.style.marginRight = "5px";
+
+    checkbox.addEventListener("change", function () {
+      if (this.checked) {
+        fetchAndProcessUploadedData(jsonData, model, sourcePrefix);
+      } else {
+        removeModelFromChart(modelLabel);
+      }
+    });
+
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(modelLabel));
+    dropdownMenu.appendChild(label);
+  });
+}
+
+function fetchAndProcessUploadedData(jsonData, selectedModel, sourcePrefix) {
+  const fullModelLabel = `${sourcePrefix} ${selectedModel}`;
+
+  if (chartData.datasets.some(ds => ds.label === fullModelLabel)) {
+    console.warn(`${fullModelLabel} is already displayed.`);
+    return;
+  }
+
+  if (!(fullModelLabel in usedColors)) {
+    usedColors[fullModelLabel] = {
+      backgroundColor: colors[currentColorIndex % colors.length],
+      borderColor: borderColors[currentColorIndex % borderColors.length]
+    };
+    currentColorIndex++;
+  }
+
+  const modelData = jsonData.filter((item) => item.model.model === selectedModel);
+
+  const metrics = {
+    direct_match: [],
+    fuzzy_match: [],
+    codebleu: [],
+    codebertscore: [],
+    codebertscore_rescaled: [],
+    code_success: [],
+    syntax_match_score: []
+  };
+
+  modelData.forEach((item) => {
+    if (item.result) {
+      item.result.forEach((result) => {
+        if ("direct_match" in result && result.direct_match !== null) {
+          metrics.direct_match.push(result.direct_match ? 1 : 0);
+        }
+        if ("fuzzy_match" in result && result.fuzzy_match !== null) {
+          metrics.fuzzy_match.push(result.fuzzy_match / 100);
+        }
+        if ("codebleu" in result && result.codebleu?.codebleu !== null) {
+          metrics.codebleu.push(result.codebleu.codebleu);
+        }
+        if ("codebertscore" in result && result.codebertscore?.F1 !== null) {
+          metrics.codebertscore.push(result.codebertscore.F1);
+        }
+        if ("codebertscore_rescaled" in result && result.codebertscore_rescaled?.F1 !== null) {
+          metrics.codebertscore_rescaled.push(result.codebertscore_rescaled.F1);
+        }
+      });
+    }
+
+    if (item.result_summary) {
+      if ("code_success" in item.result_summary) {
+        metrics.code_success.push(item.result_summary.code_success);
+      }
+      if ("syntax_match_score" in item.result_summary) {
+        metrics.syntax_match_score.push(item.result_summary.syntax_match_score);
+      }
+    }
+  });
+
+  const averages = {};
+  for (const [key, values] of Object.entries(metrics)) {
+    averages[key] = values.length
+      ? values.reduce((sum, val) => sum + val, 0) / values.length
+      : 0;
+  }
+
+  updateChart(fullModelLabel, averages);
+}
+
+</script>
+>>>>>>> 1ebf8cb (Added json upload capability)
