@@ -27,7 +27,9 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+
 let allModels = {}; // Store unique models and datasets
+let uploadedData = []; // Store uploaded JSON data
 
 const jsonSources = [
   { path: "{{ site.baseurl }}/assets/json/benchmark_results_new.json", prefix: "[New] " },
@@ -36,6 +38,7 @@ const jsonSources = [
 
 const dropdownBtn = document.getElementById("dropdown-btn");
 const dropdownMenu = document.getElementById("model-dropdown");
+const fileInput = document.getElementById("json-upload");
 
 let chartData = {
   labels: [],
@@ -94,6 +97,31 @@ document.addEventListener("click", (event) => {
   }
 });
 
+// Handle File Upload
+fileInput.addEventListener("change", function (event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function (e) {
+    try {
+      const jsonData = JSON.parse(e.target.result);
+
+      if (!Array.isArray(jsonData)) {
+        throw new Error("Invalid JSON format: Root must be an array.");
+      }
+
+      processUploadedData(jsonData, file.name);
+    } catch (error) {
+      console.error("Error processing uploaded JSON:", error);
+      alert("Error: Unable to read JSON file. Ensure it's in the correct format.");
+    }
+  };
+
+  reader.readAsText(file);
+});
+
 async function fetchAllData() {
   try {
     const allData = [];
@@ -105,10 +133,11 @@ async function fetchAllData() {
       });
       allData.push(...data);
     }
+    allData.push(...uploadedData); // Include uploaded JSON data
     return allData;
   } catch (error) {
     console.error("Error fetching JSON files:", error);
-    return [];
+    return uploadedData; // At least return the uploaded data if remote fetch fails
   }
 }
 
@@ -121,7 +150,8 @@ async function populateDropdown() {
 
     data.forEach((item) => {
       if (item.model && item.model.model) {
-        const modelLabel = `${item.sourcePrefix}${item.model.model}`;
+        const sourcePrefix = item.sourcePrefix || "[Uploaded] ";
+        const modelLabel = `${sourcePrefix}${item.model.model}`;
 
         if (!models.has(modelLabel)) {
           models.add(modelLabel);
@@ -138,7 +168,7 @@ async function populateDropdown() {
 
           checkbox.addEventListener("change", function () {
             if (this.checked) {
-              fetchAndProcessData(item.model.model, item.sourcePrefix);
+              fetchAndProcessData(item.model.model, sourcePrefix);
             } else {
               removeModelFromChart(modelLabel);
             }
@@ -177,7 +207,6 @@ async function fetchAndProcessData(selectedModel, sourcePrefix) {
 
     let metrics = {};
 
-    // Extract and aggregate metrics from "result_summary"
     modelData.forEach((item) => {
       if (item.result_summary) {
         for (const [key, value] of Object.entries(item.result_summary)) {
@@ -185,14 +214,12 @@ async function fetchAndProcessData(selectedModel, sourcePrefix) {
             if (!metrics[key]) {
               metrics[key] = [];
             }
-            // Normalize values > 1 by dividing by 100
             metrics[key].push(value > 1 ? value / 100 : value);
           }
         }
       }
     });
 
-    // Compute Averages
     let averages = {};
     for (const [key, values] of Object.entries(metrics)) {
       averages[key] = values.reduce((sum, val) => sum + val, 0) / values.length;
@@ -225,6 +252,18 @@ function updateChart(selectedModel, averages) {
   benchmarkChart.update();
 }
 
+function processUploadedData(jsonData, filename) {
+  const sourcePrefix = `[Uploaded] ${filename.replace(".json", "")}`;
+
+  jsonData.forEach(entry => {
+    entry.sourcePrefix = sourcePrefix;
+  });
+
+  uploadedData = [...jsonData]; // Store uploaded data globally
+  populateDropdown(); // Refresh dropdown with uploaded models
+}
+
 populateDropdown();
+
 
 </script>
