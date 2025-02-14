@@ -27,379 +27,204 @@ AstroCodeBench is a benchmark designed to test LLM proficiency with using astron
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+let allModels = {}; // Store unique models and datasets
 
-  let allModels = {}; // Store unique models and datasets
+const jsonSources = [
+  { path: "{{ site.baseurl }}/assets/json/benchmark_results_new.json", prefix: "[New] " },
+  { path: "{{ site.baseurl }}/assets/json/benchmark_results_old.json", prefix: "[Old] " }
+];
 
-  const jsonSources = [
-    { path: "{{ site.baseurl }}/assets/json/benchmark_results_new.json", prefix: "[New] " },
-    { path: "{{ site.baseurl }}/assets/json/benchmark_results_old.json", prefix: "[Old] " }
-  ];
-  
-  const dropdownBtn = document.getElementById("dropdown-btn");
-  const dropdownMenu = document.getElementById("model-dropdown");
+const dropdownBtn = document.getElementById("dropdown-btn");
+const dropdownMenu = document.getElementById("model-dropdown");
 
-  let chartData = {
-    labels: [],
-    datasets: []
-  };
+let chartData = {
+  labels: [],
+  datasets: []
+};
 
-  let colors = [
-    "rgba(255, 99, 132, 0.5)",
-    "rgba(54, 162, 235, 0.5)",
-    "rgba(255, 206, 86, 0.5)",
-    "rgba(75, 192, 192, 0.5)",
-    "rgba(153, 102, 255, 0.5)",
-    "rgba(255, 159, 64, 0.5)",
-    "rgba(201, 203, 207, 0.5)"
-  ];
-  
-  let borderColors = [
-    "rgba(255, 99, 132, 1)",
-    "rgba(54, 162, 235, 1)",
-    "rgba(255, 206, 86, 1)",
-    "rgba(75, 192, 192, 1)",
-    "rgba(153, 102, 255, 1)",
-    "rgba(255, 159, 64, 1)",
-    "rgba(201, 203, 207, 1)"
-  ];
+let colors = [
+  "rgba(255, 99, 132, 0.5)",
+  "rgba(54, 162, 235, 0.5)",
+  "rgba(255, 206, 86, 0.5)",
+  "rgba(75, 192, 192, 0.5)",
+  "rgba(153, 102, 255, 0.5)",
+  "rgba(255, 159, 64, 0.5)",
+  "rgba(201, 203, 207, 0.5)"
+];
 
-  let usedColors = {}; 
-  let currentColorIndex = 0;
+let borderColors = [
+  "rgba(255, 99, 132, 1)",
+  "rgba(54, 162, 235, 1)",
+  "rgba(255, 206, 86, 1)",
+  "rgba(75, 192, 192, 1)",
+  "rgba(153, 102, 255, 1)",
+  "rgba(255, 159, 64, 1)",
+  "rgba(201, 203, 207, 1)"
+];
 
-  let ctx = document.getElementById("benchmarkChart").getContext("2d");
-  let benchmarkChart = new Chart(ctx, {
-    type: "bar",
-    data: chartData,
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      scales: {
-        y: { beginAtZero: true }
-      },
-      plugins: {
-        legend: { display: true },
-        title: { display: true, text: "Benchmark Evaluation Metrics" }
-      }
-    }
-  });
+let usedColors = {}; 
+let currentColorIndex = 0;
 
-  // Show/Hide Dropdown Menu
-  dropdownBtn.addEventListener("click", () => {
-    dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
-  });
-
-  // Close dropdown if clicked outside
-  document.addEventListener("click", (event) => {
-    if (!dropdownBtn.contains(event.target) && !dropdownMenu.contains(event.target)) {
-      dropdownMenu.style.display = "none";
-    }
-  });
-
-  async function fetchAllData() {
-    try {
-      const allData = [];
-      for (const source of jsonSources) {
-        const response = await fetch(source.path);
-        const data = await response.json();
-        data.forEach(entry => {
-          entry.sourcePrefix = source.prefix;
-        });
-        allData.push(...data);
-      }
-      return allData;
-    } catch (error) {
-      console.error("Error fetching JSON files:", error);
-      return [];
+let ctx = document.getElementById("benchmarkChart").getContext("2d");
+let benchmarkChart = new Chart(ctx, {
+  type: "bar",
+  data: chartData,
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    scales: {
+      y: { beginAtZero: true, max: 1 }
+    },
+    plugins: {
+      legend: { display: true },
+      title: { display: true, text: "Benchmark Evaluation Metrics" }
     }
   }
-
-  async function populateDropdown() {
-    try {
-      const data = await fetchAllData();
-      const models = new Set();
-
-      dropdownMenu.innerHTML = ""; 
-
-      data.forEach((item) => {
-        if (item.model && item.model.model) {
-          const modelLabel = `${item.sourcePrefix}${item.model.model}`;
-
-          if (!models.has(modelLabel)) {
-            models.add(modelLabel);
-
-            const label = document.createElement("label");
-            label.style.display = "block";
-            label.style.cursor = "pointer";
-            label.style.padding = "5px";
-
-            const checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
-            checkbox.value = modelLabel;
-            checkbox.style.marginRight = "5px";
-
-            checkbox.addEventListener("change", function () {
-              if (this.checked) {
-                fetchAndProcessData(item.model.model, item.sourcePrefix);
-              } else {
-                removeModelFromChart(modelLabel);
-              }
-            });
-
-            label.appendChild(checkbox);
-            label.appendChild(document.createTextNode(modelLabel));
-            dropdownMenu.appendChild(label);
-          }
-        }
-      });
-    } catch (error) {
-      console.error("Error populating dropdown:", error);
-    }
-  }
-
-  async function fetchAndProcessData(selectedModel, sourcePrefix) {
-    try {
-      const data = await fetchAllData();
-
-      const fullModelLabel = `${sourcePrefix}${selectedModel}`;
-
-      if (chartData.datasets.some(ds => ds.label === fullModelLabel)) {
-        console.warn(`${fullModelLabel} is already displayed.`);
-        return;
-      }
-
-      if (!(fullModelLabel in usedColors)) {
-        usedColors[fullModelLabel] = {
-          backgroundColor: colors[currentColorIndex % colors.length],
-          borderColor: borderColors[currentColorIndex % borderColors.length]
-        };
-        currentColorIndex++;
-      }
-
-      const modelData = data.filter((item) => item.model.model === selectedModel && item.sourcePrefix === sourcePrefix);
-
-      const metrics = {
-        direct_match: [],
-        fuzzy_match: [],
-        codebleu: [],
-        codebertscore: [],
-        codebertscore_rescaled: [],
-        code_success: [],
-        syntax_match_score: []
-      };
-
-      modelData.forEach((item) => {
-        if (item.result) {
-          item.result.forEach((result) => {
-            if ("direct_match" in result && result.direct_match !== null) {
-              metrics.direct_match.push(result.direct_match ? 1 : 0);
-            }
-            if ("fuzzy_match" in result && result.fuzzy_match !== null) {
-              metrics.fuzzy_match.push(result.fuzzy_match / 100); 
-            }
-            if ("codebleu" in result && result.codebleu?.codebleu !== null) {
-              metrics.codebleu.push(result.codebleu.codebleu);
-            }
-            if ("codebertscore" in result && result.codebertscore?.F1 !== null) {
-              metrics.codebertscore.push(result.codebertscore.F1);
-            }
-            if ("codebertscore_rescaled" in result && result.codebertscore_rescaled?.F1 !== null) {
-              metrics.codebertscore_rescaled.push(result.codebertscore_rescaled.F1);
-            }
-          });
-        }
-
-        if (item.result_summary) {
-          if ("code_success" in item.result_summary) {
-            metrics.code_success.push(item.result_summary.code_success);
-          }
-          if ("syntax_match_score" in item.result_summary) {
-            metrics.syntax_match_score.push(item.result_summary.syntax_match_score);
-          }
-        }
-      });
-
-      const averages = {};
-      for (const [key, values] of Object.entries(metrics)) {
-        averages[key] = values.length
-          ? values.reduce((sum, val) => sum + val, 0) / values.length
-          : 0;
-      }
-
-      updateChart(fullModelLabel, averages);
-    } catch (error) {
-      console.error("Error fetching or processing JSON data:", error);
-    }
-  }
-
-  function removeModelFromChart(selectedModel) {
-    chartData.datasets = chartData.datasets.filter(ds => ds.label !== selectedModel);
-    benchmarkChart.update();
-  }
-
-  function updateChart(selectedModel, averages) {
-    if (chartData.labels.length === 0) {
-      chartData.labels = Object.keys(averages);
-    }
-
-    chartData.datasets.push({
-      label: selectedModel,
-      data: Object.values(averages),
-      backgroundColor: usedColors[selectedModel].backgroundColor,
-      borderColor: usedColors[selectedModel].borderColor,
-      borderWidth: 1
-    });
-
-    benchmarkChart.update();
-  }
-
-  populateDropdown();
-</script>
-
-<script>
-const fileInput = document.getElementById("json-upload");
-
-fileInput.addEventListener("change", function (event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-
-  reader.onload = function (e) {
-    try {
-      const jsonString = e.target.result.trim(); // Trim whitespace to avoid errors
-      console.log("Raw JSON String:", jsonString); // Debugging log
-
-      const jsonData = JSON.parse(jsonString);
-
-      if (!Array.isArray(jsonData)) {
-        throw new Error("Invalid JSON format: Root must be an array.");
-      }
-
-      console.log("Parsed JSON:", jsonData); // Debugging log
-      processUploadedData(jsonData, file.name);
-    } catch (error) {
-      console.error("Error processing uploaded JSON:", error);
-      alert("Error: Unable to read JSON file. Ensure it's in the correct format.");
-    }
-  };
-
-  reader.onerror = function () {
-    alert("Error reading the file. Please try again.");
-  };
-
-  reader.readAsText(file);
 });
 
+// Show/Hide Dropdown Menu
+dropdownBtn.addEventListener("click", () => {
+  dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
+});
 
-function processUploadedData(jsonData, filename) {
-  const sourcePrefix = `[Uploaded] ${filename.replace(".json", "")}`;
-  const models = new Set();
+// Close dropdown if clicked outside
+document.addEventListener("click", (event) => {
+  if (!dropdownBtn.contains(event.target) && !dropdownMenu.contains(event.target)) {
+    dropdownMenu.style.display = "none";
+  }
+});
 
-  jsonData.forEach((item) => {
-    if (item.model && item.model.model) {
-      models.add(item.model.model);
+async function fetchAllData() {
+  try {
+    const allData = [];
+    for (const source of jsonSources) {
+      const response = await fetch(source.path);
+      const data = await response.json();
+      data.forEach(entry => {
+        entry.sourcePrefix = source.prefix;
+      });
+      allData.push(...data);
     }
-  });
+    return allData;
+  } catch (error) {
+    console.error("Error fetching JSON files:", error);
+    return [];
+  }
+}
 
-  // Add uploaded models to dropdown
-  models.forEach((model) => {
-    const modelLabel = `${sourcePrefix} ${model}`;
+async function populateDropdown() {
+  try {
+    const data = await fetchAllData();
+    const models = new Set();
 
-    if (!allModels[modelLabel]) {
-      allModels[modelLabel] = new Set(["Uploaded File"]);
+    dropdownMenu.innerHTML = ""; 
+
+    data.forEach((item) => {
+      if (item.model && item.model.model) {
+        const modelLabel = `${item.sourcePrefix}${item.model.model}`;
+
+        if (!models.has(modelLabel)) {
+          models.add(modelLabel);
+
+          const label = document.createElement("label");
+          label.style.display = "block";
+          label.style.cursor = "pointer";
+          label.style.padding = "5px";
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.value = modelLabel;
+          checkbox.style.marginRight = "5px";
+
+          checkbox.addEventListener("change", function () {
+            if (this.checked) {
+              fetchAndProcessData(item.model.model, item.sourcePrefix);
+            } else {
+              removeModelFromChart(modelLabel);
+            }
+          });
+
+          label.appendChild(checkbox);
+          label.appendChild(document.createTextNode(modelLabel));
+          dropdownMenu.appendChild(label);
+        }
+      }
+    });
+  } catch (error) {
+    console.error("Error populating dropdown:", error);
+  }
+}
+
+async function fetchAndProcessData(selectedModel, sourcePrefix) {
+  try {
+    const data = await fetchAllData();
+    const fullModelLabel = `${sourcePrefix}${selectedModel}`;
+
+    if (chartData.datasets.some(ds => ds.label === fullModelLabel)) {
+      console.warn(`${fullModelLabel} is already displayed.`);
+      return;
     }
 
-    const label = document.createElement("label");
-    label.style.display = "block";
-    label.style.cursor = "pointer";
-    label.style.padding = "5px";
+    if (!(fullModelLabel in usedColors)) {
+      usedColors[fullModelLabel] = {
+        backgroundColor: colors[currentColorIndex % colors.length],
+        borderColor: borderColors[currentColorIndex % borderColors.length]
+      };
+      currentColorIndex++;
+    }
 
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.value = modelLabel;
-    checkbox.style.marginRight = "5px";
+    const modelData = data.filter((item) => item.model.model === selectedModel && item.sourcePrefix === sourcePrefix);
 
-    checkbox.addEventListener("change", function () {
-      if (this.checked) {
-        fetchAndProcessUploadedData(jsonData, model, sourcePrefix);
-      } else {
-        removeModelFromChart(modelLabel);
+    let metrics = {};
+
+    // Extract and aggregate metrics from "result_summary"
+    modelData.forEach((item) => {
+      if (item.result_summary) {
+        for (const [key, value] of Object.entries(item.result_summary)) {
+          if (typeof value === "number") {
+            if (!metrics[key]) {
+              metrics[key] = [];
+            }
+            // Normalize values > 1 by dividing by 100
+            metrics[key].push(value > 1 ? value / 100 : value);
+          }
+        }
       }
     });
 
-    label.appendChild(checkbox);
-    label.appendChild(document.createTextNode(modelLabel));
-    dropdownMenu.appendChild(label);
-  });
-}
-
-function fetchAndProcessUploadedData(jsonData, selectedModel, sourcePrefix) {
-  const fullModelLabel = `${sourcePrefix} ${selectedModel}`;
-
-  if (chartData.datasets.some(ds => ds.label === fullModelLabel)) {
-    console.warn(`${fullModelLabel} is already displayed.`);
-    return;
-  }
-
-  if (!(fullModelLabel in usedColors)) {
-    usedColors[fullModelLabel] = {
-      backgroundColor: colors[currentColorIndex % colors.length],
-      borderColor: borderColors[currentColorIndex % borderColors.length]
-    };
-    currentColorIndex++;
-  }
-
-  const modelData = jsonData.filter((item) => item.model.model === selectedModel);
-
-  const metrics = {
-    direct_match: [],
-    fuzzy_match: [],
-    codebleu: [],
-    codebertscore: [],
-    codebertscore_rescaled: [],
-    code_success: [],
-    syntax_match_score: []
-  };
-
-  modelData.forEach((item) => {
-    if (item.result) {
-      item.result.forEach((result) => {
-        if ("direct_match" in result && result.direct_match !== null) {
-          metrics.direct_match.push(result.direct_match ? 1 : 0);
-        }
-        if ("fuzzy_match" in result && result.fuzzy_match !== null) {
-          metrics.fuzzy_match.push(result.fuzzy_match / 100);
-        }
-        if ("codebleu" in result && result.codebleu?.codebleu !== null) {
-          metrics.codebleu.push(result.codebleu.codebleu);
-        }
-        if ("codebertscore" in result && result.codebertscore?.F1 !== null) {
-          metrics.codebertscore.push(result.codebertscore.F1);
-        }
-        if ("codebertscore_rescaled" in result && result.codebertscore_rescaled?.F1 !== null) {
-          metrics.codebertscore_rescaled.push(result.codebertscore_rescaled.F1);
-        }
-      });
+    // Compute Averages
+    let averages = {};
+    for (const [key, values] of Object.entries(metrics)) {
+      averages[key] = values.reduce((sum, val) => sum + val, 0) / values.length;
     }
 
-    if (item.result_summary) {
-      if ("code_success" in item.result_summary) {
-        metrics.code_success.push(item.result_summary.code_success);
-      }
-      if ("syntax_match_score" in item.result_summary) {
-        metrics.syntax_match_score.push(item.result_summary.syntax_match_score);
-      }
-    }
-  });
+    updateChart(fullModelLabel, averages);
+  } catch (error) {
+    console.error("Error fetching or processing JSON data:", error);
+  }
+}
 
-  const averages = {};
-  for (const [key, values] of Object.entries(metrics)) {
-    averages[key] = values.length
-      ? values.reduce((sum, val) => sum + val, 0) / values.length
-      : 0;
+function removeModelFromChart(selectedModel) {
+  chartData.datasets = chartData.datasets.filter(ds => ds.label !== selectedModel);
+  benchmarkChart.update();
+}
+
+function updateChart(selectedModel, averages) {
+  if (chartData.labels.length === 0) {
+    chartData.labels = Object.keys(averages);
   }
 
-  updateChart(fullModelLabel, averages);
+  chartData.datasets.push({
+    label: selectedModel,
+    data: Object.values(averages),
+    backgroundColor: usedColors[selectedModel].backgroundColor,
+    borderColor: usedColors[selectedModel].borderColor,
+    borderWidth: 1
+  });
+
+  benchmarkChart.update();
 }
+
+populateDropdown();
 
 </script>
